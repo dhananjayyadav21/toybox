@@ -1,0 +1,104 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Outfit:wght@400;500;600;700;800;900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-toy-light text-toy-dark font-sans;
+    background-image: radial-gradient(at 0% 0%, rgba(255, 107, 107, 0.02) 0px, transparent 40%),
+                      radial-gradient(at 100% 100%, rgba(78, 205, 196, 0.03) 0px, transparent 40%),
+                      radial-gradient(at 50% 0%, rgba(108, 99, 255, 0.01) 0px, transparent 45%);
+    background-attachment: fixed;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  /* Sharp Headings styling */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Outfit', sans-serif;
+    @apply tracking-tight font-extrabold text-slate-900;
+  }
+}
+
+@layer components {
+  /* Ultra-Sharp High Definition Cards */
+  .glass-card {
+    @apply bg-white border-[1.5px] border-slate-100 shadow-[0_8px_30px_-12px_rgba(30,41,59,0.08)] rounded-2xl transition-all duration-300;
+    backdrop-filter: blur(16px);
+  }
+  
+  .glass-card-hover {
+    @apply hover:border-slate-200/80 hover:shadow-[0_20px_40px_-16px_rgba(30,41,59,0.12)] hover:-translate-y-[3px];
+  }
+
+  /* High Definition Crisp Buttons with light edge reflections */
+  .btn-toy-primary {
+    @apply px-6 py-3 bg-toy-coral text-white font-extrabold text-xs rounded-xl shadow-[0_4px_14px_rgba(255,107,107,0.25)] hover:bg-rose-500 hover:shadow-[0_6px_20px_rgba(255,107,107,0.35)] active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 uppercase tracking-widest border-b-[2px] border-rose-600;
+  }
+
+  .btn-toy-secondary {
+    @apply px-6 py-3 bg-toy-teal text-white font-extrabold text-xs rounded-xl shadow-[0_4px_14px_rgba(78,205,196,0.25)] hover:bg-teal-500 hover:shadow-[0_6px_20px_rgba(78,205,196,0.35)] active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 uppercase tracking-widest border-b-[2px] border-teal-600;
+  }
+
+  .btn-toy-outline {
+    @apply px-6 py-3 bg-white text-slate-800 border-[1.5px] border-slate-200 font-extrabold text-xs rounded-xl hover:bg-slate-50 hover:border-slate-300 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 uppercase tracking-widest border-b-[2px] border-slate-200;
+  }
+
+  .btn-toy-yellow {
+    @apply px-6 py-3 bg-toy-yellow text-slate-900 border-b-[2px] border-yellow-500 font-extrabold text-xs rounded-xl shadow-[0_4px_14px_rgba(255,230,109,0.25)] hover:bg-yellow-400 active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 uppercase tracking-widest;
+  }
+
+  /* Category Badges with precise outlines */
+  .badge-category {
+    @apply px-2.5 py-0.5 text-[9px] font-black rounded-md uppercase tracking-widest border border-slate-200/60;
+  }
+
+  /* Micro Grid Matrix backdrop */
+  .bg-grid-pattern {
+    background-size: 24px 24px;
+    background-image: radial-gradient(circle, rgba(30, 41, 59, 0.035) 1px, transparent 1px);
+  }
+
+  /* Premium Gradient Text */
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-toy-coral via-toy-purple to-toy-teal;
+  }
+
+  /* Soft Light Bloom Background Orbs */
+  .blur-blob {
+    @apply absolute w-80 h-80 rounded-full filter blur-3xl opacity-20 pointer-events-none z-0;
+  }
+}
+
+/* Slick scrollbars */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-50;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300 rounded-full hover:bg-slate-400 transition-colors;
+}
+
+/* Sharp zoom-in scale triggers */
+.product-zoom-container {
+  overflow: hidden;
+  position: relative;
+  border: 1.5px solid rgba(15, 23, 42, 0.04);
+}
+
+.product-zoom-image {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.product-zoom-container:hover .product-zoom-image {
+  transform: scale(1.04);
+}
