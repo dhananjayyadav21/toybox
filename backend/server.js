@@ -28,7 +28,13 @@ const app = express();
 app.use(helmet({
   crossOriginResourcePolicy: false // Allows loading images from external URLs without CORS headers issues
 }));
-app.use(cors());
+app.use(cors({
+  origin: process.env.NODE_ENV === 'production'
+    ? process.env.FRONTEND_URL   // e.g. https://toybox.vercel.app
+    : '*',
+  credentials: true
+}));
+
 app.use(express.json());
 
 // Log API requests in development mode

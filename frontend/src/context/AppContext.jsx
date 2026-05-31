@@ -1,6 +1,12 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
+// In production (Vercel), point to deployed backend URL via env var
+// In development, Vite proxy handles /api → localhost:5000
+if (import.meta.env.VITE_API_URL) {
+  axios.defaults.baseURL = import.meta.env.VITE_API_URL;
+}
+
 const AppContext = createContext();
 
 export const useAppContext = () => useContext(AppContext);
