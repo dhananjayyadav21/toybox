@@ -222,14 +222,15 @@ export default function Navbar() {
                       <div className="px-4 py-1.5 text-[10px] text-slate-400 font-bold border-b border-slate-100 uppercase tracking-wider">
                         My Account
                       </div>
-                      <Link 
-                        to="/dashboard" 
-                        onClick={() => setProfileDropdownOpen(false)}
-                        className="block px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 transition-colors"
-                      >
-                        My Profile
-                      </Link>
-                      {user.role === 'admin' && (
+                      {user.role !== 'admin' ? (
+                        <Link 
+                          to="/dashboard" 
+                          onClick={() => setProfileDropdownOpen(false)}
+                          className="block px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 transition-colors"
+                        >
+                          My Profile
+                        </Link>
+                      ) : (
                         <Link 
                           to="/admin" 
                           onClick={() => setProfileDropdownOpen(false)}

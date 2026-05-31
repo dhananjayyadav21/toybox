@@ -50,6 +50,7 @@ export default function Checkout() {
   const [simulatedOrderPayload, setSimulatedOrderPayload] = useState(null);
   const [simulatedStep, setSimulatedStep] = useState('select'); 
   const [activePaymentTab, setActivePaymentTab] = useState('card');
+  const [upiAddress, setUpiAddress] = useState('dhananjay1807d@okhdfcbank');
 
   // Compute pricing
   const subtotal = useMemo(() => {
@@ -702,13 +703,19 @@ export default function Checkout() {
 
                   {activePaymentTab === 'upi' && (
                     <div className="flex flex-col gap-2 font-semibold text-slate-500">
-                      <label className="text-[9px] text-slate-400 block mb-0.5">Virtual Private Address (VPA)</label>
-                      <div className="bg-slate-50 border border-slate-200 p-2.5 rounded-sm flex items-center justify-between">
-                        <span className="font-bold text-slate-850">{user.email.split('@')[0]}@okhdfcbank</span>
-                        <span className="text-[9px] bg-emerald-50 text-[#388E3C] px-1.5 py-0.2 rounded font-bold border border-emerald-100">Verified</span>
+                      <label className="text-[9px] text-slate-400 block mb-0.5 font-bold uppercase">Virtual Private Address (VPA) / UPI ID</label>
+                      <div className="relative flex items-center">
+                        <input 
+                          type="text" 
+                          placeholder="e.g. name@okaxis"
+                          value={upiAddress} 
+                          onChange={(e) => setUpiAddress(e.target.value)} 
+                          className="w-full bg-slate-50 border border-slate-200 rounded-[2px] pl-3 pr-16 py-2.5 outline-none font-bold text-slate-850 focus:bg-white focus:border-[#3399FF] transition-all" 
+                        />
+                        <span className="text-[9px] bg-emerald-50 text-[#388E3C] px-1.5 py-0.5 rounded font-bold border border-emerald-100 absolute right-2 select-none">Verified</span>
                       </div>
-                      <p className="text-[10px] text-slate-450 leading-relaxed mt-1">
-                        Clicks on "Authorize Payment" below. Mock sandbox resolves the transaction without external UPI notifications.
+                      <p className="text-[10px] text-slate-400 leading-relaxed mt-1 font-medium">
+                        Please enter your active UPI VPA (e.g. `@okhdfcbank`, `@okaxis`, `@ybl`). Click "Pay Securely" to complete your sandbox transaction.
                       </p>
                     </div>
                   )}

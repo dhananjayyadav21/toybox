@@ -1,48 +1,14 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Phone, MapPin, Heart, Sparkles, Send } from 'lucide-react';
+import { Mail, Phone, MapPin, Heart } from 'lucide-react';
 import { useAppContext } from '../context/AppContext';
 
 export default function Footer() {
-  const { categories, showToast } = useAppContext();
-  const [email, setEmail] = useState('');
-
-  const handleSubscribe = (e) => {
-    e.preventDefault();
-    if (email.trim()) {
-      showToast('Thank you! You are now subscribed to the ToyBox Club Newsletter! 💌');
-      setEmail('');
-    }
-  };
+  const { categories } = useAppContext();
 
   return (
-    <footer className="bg-slate-900 text-slate-300 border-t border-slate-800 pt-16 pb-8 mt-24">
+    <footer className="bg-slate-900 text-slate-300 border-t border-slate-800 pt-12 pb-8 mt-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        
-        {/* Newsletter Section */}
-        <div className="bg-gradient-to-r from-toy-coral via-toy-purple to-toy-teal rounded-3xl p-8 md:p-12 shadow-premium flex flex-col md:flex-row items-center justify-between gap-8 -mt-32 mb-16">
-          <div className="text-white max-w-lg text-center md:text-left">
-            <h3 className="text-2xl md:text-3xl font-extrabold flex items-center justify-center md:justify-start gap-2">
-              Join the ToyBox Magic Club <Sparkles className="w-6 h-6 text-toy-yellow animate-bounce-slow" />
-            </h3>
-            <p className="text-white/80 text-sm mt-2 font-medium">
-              Subscribe to unlock 20% off your first order, get secret holiday coupons, and early access to limited edition educational toys.
-            </p>
-          </div>
-          <form onSubmit={handleSubscribe} className="flex w-full md:w-auto flex-1 max-w-md bg-white/10 backdrop-blur-md p-1.5 rounded-2xl border border-white/20">
-            <input
-              type="email"
-              placeholder="Your email address..."
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="flex-1 bg-transparent px-4 py-2 text-white placeholder-white/60 outline-none text-sm font-medium"
-            />
-            <button type="submit" className="p-3 bg-white text-slate-900 hover:bg-toy-yellow font-bold rounded-xl active:scale-95 transition-all">
-              <Send className="w-4 h-4" />
-            </button>
-          </form>
-        </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
           

@@ -32,6 +32,13 @@ const orderSchema = new mongoose.Schema({
   deliveryOtp: { type: String },
   deliveryOtpExpires: { type: Date },
   isDeliveryOtpVerified: { type: Boolean, default: false },
+  statusHistory: [
+    {
+      status: { type: String },
+      comment: { type: String },
+      createdAt: { type: Date, default: Date.now }
+    }
+  ]
 }, {
   timestamps: true
 });

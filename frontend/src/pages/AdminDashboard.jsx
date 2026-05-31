@@ -238,6 +238,10 @@ export default function AdminDashboard() {
 
   // Update order status
   const updateStatus = async (orderId, orderStatus, paymentStatus) => {
+    if (orderStatus === 'Delivered') {
+      showToast('To mark order as Delivered, please use the secure Doorstep OTP Verification panel!', 'error');
+      return;
+    }
     try {
       if (!isOfflineMode) {
         await axios.put(`/api/orders/${orderId}/status`, { orderStatus, paymentStatus }, getAuthHeaders());
@@ -249,7 +253,8 @@ export default function AdminDashboard() {
       ));
       showToast(`Order status updated successfully!`);
     } catch (err) {
-      showToast('Failed to update status', 'error');
+      const errMsg = err.response?.data?.message || 'Failed to update status';
+      showToast(errMsg, 'error');
     }
   };
 
@@ -504,6 +509,138 @@ export default function AdminDashboard() {
                     </div>
                   </div>
 
+                </div>
+
+                {/* PENDING ORDERS LIST WITH OTP VERIFICATION (Direct action in Overview) */}
+                <div className="bg-white border border-slate-200 rounded-sm p-4 md:p-6 shadow-sm text-xs font-semibold">
+                  <div className="border-b border-slate-100 pb-3 mb-4 select-none flex justify-between items-center">
+                    <span className="text-[#212121] uppercase font-bold text-sm">Pending Dispatches Control Room</span>
+                    <span className="text-[10px] bg-[#FB641B]/15 text-[#FB641B] px-2 py-0.5 rounded font-black uppercase">
+                      Action Required ({orders.filter(o => o.orderStatus !== 'Delivered' && o.orderStatus !== 'Cancelled').length})
+                    </span>
+                  </div>
+
+                  {orders.filter(o => o.orderStatus !== 'Delivered' && o.orderStatus !== 'Cancelled').length > 0 ? (
+                    <div className="flex flex-col gap-4">
+                      {orders.filter(o => o.orderStatus !== 'Delivered' && o.orderStatus !== 'Cancelled').map((ord) => (
+                        <div key={ord._id} className="bg-slate-50 border border-slate-200 rounded-sm p-4 flex flex-col gap-4 text-left shadow-sm">
+                          
+                          {/* Order info details */}
+                          <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-200 text-slate-455 select-none">
+                            <div>
+                              <span>Order ID: <b className="text-[#212121]">#{ord._id.toString().toUpperCase()}</b></span>
+                              <span className="mx-2">•</span>
+                              <span>Buyer: <b className="text-[#212121]">{ord.user?.name} ({ord.user?.email})</b></span>
+                            </div>
+                            <span className="font-bold text-[#212121]">Total: ₹{ord.totalAmount}</span>
+                          </div>
+
+                          {/* Dropdown handlers */}
+                          <div className="flex flex-wrap items-center justify-between gap-4">
+                            
+                            <div className="flex flex-wrap items-center gap-4">
+                              <div className="flex items-center gap-1.5 select-none">
+                                <span className="text-[11px] text-slate-400 font-bold uppercase">Shipment:</span>
+                                <select
+                                  value={ord.orderStatus}
+                                  onChange={(e) => updateStatus(ord._id, e.target.value, null)}
+                                  className="bg-white border border-slate-350 rounded-sm py-1 px-2.5 font-bold outline-none text-slate-800 text-[11px]"
+                                >
+                                  <option value="Pending">Pending</option>
+                                  <option value="Confirmed">Confirmed</option>
+                                  <option value="Packed">Packed</option>
+                                  <option value="Shipped">Shipped</option>
+                                  <option value="Delivered" disabled>Delivered (Requires OTP)</option>
+                                  <option value="Cancelled">Cancelled</option>
+                                </select>
+                              </div>
+
+                              <div className="flex items-center gap-1.5 select-none">
+                                <span className="text-[11px] text-slate-400 font-bold uppercase">Settlement:</span>
+                                <select
+                                  value={ord.paymentStatus}
+                                  disabled={ord.paymentMethod === 'Razorpay'}
+                                  onChange={(e) => updateStatus(ord._id, null, e.target.value)}
+                                  className={`border border-slate-350 rounded-sm py-1 px-2.5 font-bold outline-none text-[11px] ${
+                                    ord.paymentMethod === 'Razorpay'
+                                      ? 'text-slate-400 bg-slate-100 cursor-not-allowed'
+                                      : 'text-slate-800 bg-white'
+                                  }`}
+                                >
+                                  <option value="Pending">Pending</option>
+                                  <option value="Paid">Paid</option>
+                                  <option value="Failed">Failed</option>
+                                </select>
+                              </div>
+                            </div>
+
+                            <button
+                              onClick={() => handleDownloadInvoice(ord._id)}
+                              className="h-8 px-3.5 bg-white border border-slate-350 hover:bg-slate-50 text-slate-800 font-bold text-[10px] uppercase rounded-sm flex items-center gap-1 shadow-sm transition-colors outline-none"
+                            >
+                              <FileText className="w-3.5 h-3.5 text-[#FB641B]" /> Print Invoice PDF
+                            </button>
+
+                          </div>
+
+                          {/* Delivery Verification OTP Section */}
+                          <div className="mt-2 pt-3 border-t border-slate-200 flex flex-wrap items-center gap-3">
+                            {!activeOtpOrders[ord._id] ? (
+                              <button
+                                type="button"
+                                onClick={() => handleSendDeliveryOtp(ord._id)}
+                                className="h-8 px-4 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-[10px] uppercase rounded-[4px] shadow-sm transition-colors outline-none animate-pulse"
+                              >
+                                🔑 Send Delivery OTP to Buyer
+                              </button>
+                            ) : (
+                              <div className="flex flex-wrap items-center gap-2">
+                                <span className="text-[11px] font-bold text-slate-500 uppercase">Verification OTP:</span>
+                                <input
+                                  type="text"
+                                  maxLength={6}
+                                  placeholder="Enter 6-digit OTP..."
+                                  value={otpInput[ord._id] || ''}
+                                  onChange={(e) => setOtpInput(prev => ({ ...prev, [ord._id]: e.target.value }))}
+                                  className="bg-white border border-slate-300 rounded-[4px] px-3 py-1 text-xs w-36 outline-none focus:border-[#2874F0] font-bold text-center tracking-wider"
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleVerifyDeliveryOtp(ord._id)}
+                                  className="h-8 px-4 bg-[#388E3C] hover:bg-[#2e7d32] text-white font-bold text-[10px] uppercase rounded-[4px] shadow-sm transition-colors outline-none"
+                                >
+                                  Verify & Confirm Delivery
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => setActiveOtpOrders(prev => {
+                                    const next = { ...prev };
+                                    delete next[ord._id];
+                                    return next;
+                                  })}
+                                  className="text-[10px] text-slate-400 hover:underline font-bold"
+                                >
+                                  Cancel
+                                </button>
+                                {simulatedOtps[ord._id] && (
+                                  <span className="text-[10px] font-black text-[#FB641B] bg-orange-50 px-2 py-1 rounded border border-orange-100">
+                                    Sandbox OTP: {simulatedOtps[ord._id]}
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                          </div>
+
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="bg-slate-50 border border-slate-150 p-8 text-center rounded-sm select-none">
+                      <span className="text-2xl block mb-2">🎉</span>
+                      <h4 className="font-bold text-[#212121] text-xs uppercase">All dispatches cleared!</h4>
+                      <p className="text-xs text-slate-400 mt-1 leading-relaxed font-medium">No pending or shipped orders require delivery verification actions right now.</p>
+                    </div>
+                  )}
                 </div>
 
               </div>
@@ -891,24 +1028,43 @@ export default function AdminDashboard() {
                             <span className="text-[11px] text-slate-400 font-bold uppercase">Shipment:</span>
                             <select
                               value={ord.orderStatus}
+                              disabled={ord.orderStatus === 'Cancelled' || ord.orderStatus === 'Delivered'}
                               onChange={(e) => updateStatus(ord._id, e.target.value, null)}
-                              className="bg-white border border-slate-350 rounded-sm py-1 px-2.5 font-bold outline-none text-slate-800 text-[11px]"
+                              className={`bg-white border border-slate-350 rounded-sm py-1 px-2.5 font-bold outline-none text-[11px] ${
+                                (ord.orderStatus === 'Cancelled' || ord.orderStatus === 'Delivered')
+                                  ? 'text-slate-400 cursor-not-allowed bg-slate-50'
+                                  : 'text-slate-800'
+                              }`}
                             >
                               <option value="Pending">Pending</option>
                               <option value="Confirmed">Confirmed</option>
                               <option value="Packed">Packed</option>
                               <option value="Shipped">Shipped</option>
-                              <option value="Delivered">Delivered</option>
+                              <option value="Delivered" disabled>Delivered (Requires OTP)</option>
                               <option value="Cancelled">Cancelled</option>
                             </select>
                           </div>
+
+                          {ord.orderStatus === 'Cancelled' && (
+                            <button
+                              onClick={() => updateStatus(ord._id, 'Pending', null)}
+                              className="h-7 px-3 bg-indigo-600 hover:bg-indigo-750 text-white font-extrabold text-[10px] uppercase rounded-sm flex items-center gap-1 shadow-sm active:scale-95 transition-all outline-none"
+                            >
+                              🔄 Restart Order Tracking & Re-activate
+                            </button>
+                          )}
 
                           <div className="flex items-center gap-1.5 select-none">
                             <span className="text-[11px] text-slate-400 font-bold uppercase">Settlement:</span>
                             <select
                               value={ord.paymentStatus}
+                              disabled={ord.paymentMethod === 'Razorpay'}
                               onChange={(e) => updateStatus(ord._id, null, e.target.value)}
-                              className="bg-white border border-slate-350 rounded-sm py-1 px-2.5 font-bold outline-none text-slate-800 text-[11px]"
+                              className={`border border-slate-350 rounded-sm py-1 px-2.5 font-bold outline-none text-[11px] ${
+                                ord.paymentMethod === 'Razorpay'
+                                  ? 'text-slate-400 bg-slate-100 cursor-not-allowed'
+                                  : 'text-slate-800 bg-white'
+                                }`}
                             >
                               <option value="Pending">Pending</option>
                               <option value="Paid">Paid</option>

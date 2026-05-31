@@ -47,7 +47,12 @@ export const createOrder = async (req, res) => {
       totalAmount,
       razorpayOrderId,
       razorpayPaymentId,
-      razorpaySignature
+      razorpaySignature,
+      statusHistory: [{
+        status: 'Pending',
+        comment: 'Order placed successfully',
+        createdAt: new Date()
+      }]
     });
 
     const createdOrder = await order.save();
@@ -146,8 +151,42 @@ export const updateOrderStatus = async (req, res) => {
     const order = await Order.findById(req.params.id);
 
     if (order) {
+      // Validate payment for online orders before confirming/packing/shipping
+      if (orderStatus && orderStatus !== 'Pending' && orderStatus !== 'Cancelled') {
+        const currentPaymentStatus = paymentStatus || order.paymentStatus;
+        if (currentPaymentStatus === 'Pending' && order.paymentMethod !== 'COD') {
+          return res.status(400).json({ 
+            message: 'Unpaid online orders cannot be confirmed, packed, or shipped before payment is successful!' 
+          });
+        }
+      }
+
+      // Log status transition inside statusHistory
+      if (orderStatus && orderStatus !== order.orderStatus) {
+        if (!order.statusHistory) {
+          order.statusHistory = [];
+        }
+        let historyStatus = orderStatus;
+        let commentText = `Status updated to ${orderStatus}`;
+        if (order.orderStatus === 'Cancelled' && orderStatus === 'Pending') {
+          historyStatus = 'Re-activated';
+          commentText = 'Order tracking restarted & re-activated by seller';
+        }
+        order.statusHistory.push({
+          status: historyStatus,
+          comment: commentText,
+          createdAt: new Date()
+        });
+      }
+
       order.orderStatus = orderStatus || order.orderStatus;
       if (paymentStatus) {
+        // Block manual paymentStatus update for online Razorpay orders
+        if (order.paymentMethod === 'Razorpay' && paymentStatus !== order.paymentStatus) {
+          return res.status(400).json({ 
+            message: 'Settlement for online Razorpay orders is handled automatically by the gateway and cannot be modified manually!' 
+          });
+        }
         order.paymentStatus = paymentStatus;
       }
       const updatedOrder = await order.save();
@@ -276,6 +315,16 @@ export const confirmDeliveryWithOtp = async (req, res) => {
     order.isDeliveryOtpVerified = true;
     order.deliveryOtp = undefined;
     order.deliveryOtpExpires = undefined;
+
+    // Log Delivered status inside statusHistory
+    if (!order.statusHistory) {
+      order.statusHistory = [];
+    }
+    order.statusHistory.push({
+      status: 'Delivered',
+      comment: 'Delivery verified via secure doorstep OTP matching',
+      createdAt: new Date()
+    });
     
     const updatedOrder = await order.save();
     res.json({ 

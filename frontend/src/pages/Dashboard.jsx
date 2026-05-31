@@ -28,6 +28,17 @@ export default function Dashboard() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('orders'); 
 
+  const getStatusStage = (status) => {
+    switch (status) {
+      case 'Pending': return 1;
+      case 'Confirmed':
+      case 'Packed': return 2;
+      case 'Shipped': return 3;
+      case 'Delivered': return 4;
+      default: return 0; // Cancelled
+    }
+  };
+
   // Orders State
   const [orders, setOrders] = useState([]);
   const [ordersLoading, setOrdersLoading] = useState(false);
@@ -47,6 +58,10 @@ export default function Dashboard() {
   useEffect(() => {
     if (!user) {
       navigate('/login');
+      return;
+    }
+    if (user.role === 'admin') {
+      navigate('/admin');
     }
   }, [user]);
 
@@ -88,6 +103,22 @@ export default function Dashboard() {
   useEffect(() => {
     fetchMyOrders();
   }, [user, isOfflineMode]);
+
+  // Real-time synchronization polling for active dispatches
+  useEffect(() => {
+    if (!user || isOfflineMode) return;
+
+    const hasActiveDispatches = orders.some(
+      o => o.orderStatus !== 'Delivered' && o.orderStatus !== 'Cancelled'
+    );
+    if (!hasActiveDispatches) return;
+
+    const interval = setInterval(() => {
+      fetchMyOrders();
+    }, 8000);
+
+    return () => clearInterval(interval);
+  }, [orders, user, isOfflineMode]);
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
@@ -314,6 +345,131 @@ export default function Dashboard() {
                               </div>
                             ))}
                           </div>
+
+                          {/* Dynamic Visual Handover OTP Alert Box */}
+                          {ord.deliveryOtp && ord.orderStatus !== 'Delivered' && ord.orderStatus !== 'Cancelled' && (
+                            <div className="bg-emerald-50/70 border border-emerald-200 rounded p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 animate-pulse select-none my-1">
+                              <div className="flex items-start gap-3">
+                                <div className="w-8 h-8 rounded-full bg-emerald-550 text-white flex items-center justify-center text-sm shrink-0 shadow-sm font-bold">
+                                  🔑
+                                </div>
+                                <div className="min-w-0 flex-1">
+                                  <h4 className="font-extrabold text-[#388E3C] text-[11px] uppercase tracking-wide">
+                                    Doorstep Verification Passcode
+                                  </h4>
+                                  <p className="text-[10px] text-slate-600 leading-relaxed font-medium mt-0.5">
+                                    Share this secure 6-digit OTP with our delivery partner when they arrive to verify and confirm your order handover.
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1.5 shrink-0 self-end sm:self-center">
+                                <span className="text-slate-400 text-[10px] font-bold">OTP CODE:</span>
+                                <span className="bg-white text-[#388E3C] border border-emerald-250 rounded px-3 py-1.5 text-base font-black tracking-widest shadow-sm select-all">
+                                  {ord.deliveryOtp}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Dynamic Visual Stepper Progress Tracking */}
+                          {ord.orderStatus === 'Cancelled' ? (
+                            <div className="bg-rose-50/50 border border-rose-100 rounded p-3 select-none flex items-center justify-between text-[11px] font-bold text-red-650 my-1">
+                              <div className="flex items-center gap-1.5">
+                                <span className="w-2.5 h-2.5 bg-red-500 rounded-full animate-ping shrink-0" />
+                                <span>This order has been cancelled and cannot be tracked.</span>
+                              </div>
+                              <span className="text-[10px] font-black uppercase bg-rose-100 px-2 py-0.5 rounded border border-rose-200 shrink-0">Cancelled</span>
+                            </div>
+                          ) : (
+                            <div className="py-4 border-t border-b border-slate-100 select-none my-1">
+                              <span className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wider block mb-3.5">
+                                Shipment Journey Timeline
+                              </span>
+                              
+                              <div className="relative flex items-center justify-between">
+                                {/* Background Line */}
+                                <div className="absolute left-0 right-0 top-[9px] h-1 bg-slate-100 -z-10 rounded-full overflow-hidden">
+                                  <div 
+                                    className="h-full bg-emerald-500 transition-all duration-500" 
+                                    style={{ width: `${(Math.max(0, getStatusStage(ord.orderStatus) - 1) / 3) * 100}%` }}
+                                  />
+                                </div>
+
+                                {/* Step Points */}
+                                {[
+                                  { label: 'Ordered', stageNum: 1, desc: 'Placed safely' },
+                                  { label: 'Packed', stageNum: 2, desc: 'Processed & ready' },
+                                  { label: 'Shipped', stageNum: 3, desc: 'In transit' },
+                                  { label: 'Delivered', stageNum: 4, desc: 'Handed over' }
+                                ].map((step, sIdx) => {
+                                  const isDone = getStatusStage(ord.orderStatus) >= step.stageNum;
+                                  const isCurrent = getStatusStage(ord.orderStatus) === step.stageNum;
+                                  return (
+                                    <div key={sIdx} className="flex flex-col items-center text-center w-1/4 relative">
+                                      {/* Dot */}
+                                      <div 
+                                        className={`w-[22px] h-[22px] rounded-full flex items-center justify-center border font-bold text-[9px] transition-all duration-300 ${
+                                          isDone 
+                                            ? 'bg-emerald-500 border-emerald-500 text-white shadow-[0_2px_8px_rgba(16,185,129,0.3)]' 
+                                            : 'bg-white border-slate-200 text-slate-400'
+                                        } ${isCurrent ? 'ring-4 ring-emerald-50' : ''}`}
+                                      >
+                                        {isDone ? '✓' : step.stageNum}
+                                      </div>
+
+                                      {/* labels */}
+                                      <span 
+                                        className={`text-[10px] font-black mt-1.5 transition-colors duration-300 ${
+                                          isDone ? 'text-slate-800' : 'text-slate-400'
+                                        }`}
+                                      >
+                                        {step.label}
+                                      </span>
+                                      <span className="text-[8px] text-slate-400 font-medium hidden sm:block mt-0.5">
+                                        {step.desc}
+                                      </span>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
+                          {/* Dynamic Lifecycle History Logs */}
+                          {ord.statusHistory && ord.statusHistory.length > 0 && (
+                            <div className="bg-slate-50 border border-slate-200 rounded p-3 select-none my-1 flex flex-col gap-2.5">
+                              <span className="text-[9px] text-slate-400 font-extrabold uppercase tracking-wider block">
+                                Order Lifecycle History Logs
+                              </span>
+                              <div className="flex flex-col gap-3 pl-2.5 border-l-2 border-slate-200">
+                                {ord.statusHistory.map((hist, hIdx) => (
+                                  <div key={hIdx} className="flex items-start gap-2.5 text-[10px]">
+                                    <span className={`w-1.5 h-1.5 rounded-full mt-1 shrink-0 ${
+                                      hist.status === 'Cancelled' ? 'bg-rose-500 shadow-[0_0_6px_rgba(244,63,94,0.6)]' :
+                                      hist.status === 'Re-activated' ? 'bg-indigo-500 shadow-[0_0_6px_rgba(99,102,241,0.6)] animate-pulse' :
+                                      hist.status === 'Delivered' ? 'bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.6)]' : 'bg-slate-450'
+                                    }`} />
+                                    <div className="min-w-0 flex-1 leading-normal">
+                                      <div className="flex items-center gap-2">
+                                        <span className={`font-black uppercase text-[8px] tracking-widest px-1.5 py-0.5 rounded border shrink-0 ${
+                                          hist.status === 'Cancelled' ? 'bg-rose-50 border-rose-100 text-rose-600' :
+                                          hist.status === 'Re-activated' ? 'bg-indigo-50 border-indigo-100 text-indigo-600' :
+                                          hist.status === 'Delivered' ? 'bg-emerald-50 border-emerald-100 text-emerald-600' : 'bg-slate-100 border-slate-250 text-slate-650'
+                                        }`}>
+                                          {hist.status === 'Re-activated' ? '🔄 Tracking Re-activated' : hist.status}
+                                        </span>
+                                        <span className="text-slate-400 font-medium block text-[8px] shrink-0">
+                                          {new Date(hist.createdAt).toLocaleString()}
+                                        </span>
+                                      </div>
+                                      <p className="text-[10px] text-slate-600 font-bold mt-1">
+                                        {hist.comment || `Order status updated to ${hist.status}`}
+                                      </p>
+                                    </div>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
 
                           {/* Order Details footer */}
                           <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100 select-none">
