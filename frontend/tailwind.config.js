@@ -8,29 +8,30 @@ export default {
     extend: {
       colors: {
         toy: {
-          coral: "#FF6B6B",
-          teal: "#4ECDC4",
-          yellow: "#FFE66D",
-          purple: "#6C63FF",
-          dark: "#1E293B",
-          muted: "#64748B",
-          light: "#F8FAFC",
+          coral: "#FB641B", // Flipkart Secondary Orange
+          teal: "#2874F0",  // Flipkart Primary Blue
+          yellow: "#FF9F00", // Flipkart Rating Gold
+          purple: "#172337", // Flipkart Dark Blue Header
+          dark: "#212121",   // Primary Text
+          muted: "#878787",  // Secondary Text
+          light: "#F1F3F6",  // Flipkart Light Grey Background
         }
       },
       fontFamily: {
-        sans: ['Outfit', 'Inter', 'sans-serif'],
+        sans: ['Inter', 'sans-serif'],
       },
       boxShadow: {
-        'premium': '0 10px 30px -10px rgba(30, 41, 59, 0.08)',
-        'premium-hover': '0 20px 40px -15px rgba(30, 41, 59, 0.15)',
-        'neon-coral': '0 0 15px rgba(255, 107, 107, 0.3)',
-        'neon-teal': '0 0 15px rgba(78, 205, 196, 0.3)',
+        'premium': '0 1px 3px rgba(0,0,0,0.08)',
+        'premium-hover': '0 3px 6px rgba(0,0,0,0.12)',
+        'neon-coral': 'none',
+        'neon-teal': 'none',
       },
       animation: {
-        'bounce-slow': 'bounce 3s infinite',
-        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+        'bounce-slow': 'none',
+        'pulse-slow': 'none',
       }
     },
   },
   plugins: [],
 }
+
