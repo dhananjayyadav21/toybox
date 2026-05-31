@@ -4,375 +4,375 @@ import { useAppContext } from '../context/AppContext';
 import ProductCard from '../components/ProductCard';
 import SkeletonCard from '../components/SkeletonCard';
 import { 
-  ArrowRight, 
-  ShieldCheck, 
-  Truck, 
-  RotateCcw, 
-  Star,
-  ChevronLeft,
-  ChevronRight
+  ArrowRight, ShieldCheck, Truck, RotateCcw, Star,
+  ChevronLeft, ChevronRight, Sparkles, Gift, Zap
 } from 'lucide-react';
 
 const HERO_SLIDES = [
   {
-    title: 'Up to 40% Off on STEM Toys',
-    subtitle: 'DEVELOPMENTAL & LOGIC PUZZLES',
-    description: 'Fuel curiosity and creative building with GOTS certified, chemical-free non-toxic wooden blocks.',
-    image: 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&q=80&w=800',
+    title: 'Spark Curiosity with STEM Toys',
+    subtitle: 'Up to 40% off on Educational Toys',
+    description: 'Certified non-toxic wooden puzzles and blocks that build spatial reasoning and motor skills from day one.',
+    image: 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?auto=format&fit=crop&q=80&w=900',
     link: '/shop?category=educational-toys',
-    badge: 'Deal of the Day'
+    badge: 'Deal of the Day',
+    badgeColor: 'bg-amber-400 text-amber-900',
+    gradient: 'from-violet-900 via-purple-800 to-indigo-900',
+    accent: 'bg-violet-700'
   },
   {
-    title: 'Super High Speed RC Monster Trucks',
-    subtitle: 'REMOTE CONTROL VEHICLES',
-    description: 'Heavy duty all-terrain RC cars with massive shock absorption. 100% kid-safe high-impact polymers.',
-    image: 'https://images.unsplash.com/photo-1594787318286-3d835c1d207f?auto=format&fit=crop&q=80&w=800',
+    title: 'High-Speed RC Adventure',
+    subtitle: 'Monster trucks built for real terrain',
+    description: 'All-terrain RC cars with superior shock absorption. Engineered with 100% kid-safe high-impact polymers.',
+    image: 'https://images.unsplash.com/photo-1594787318286-3d835c1d207f?auto=format&fit=crop&q=80&w=900',
     link: '/shop?category=remote-control-toys',
-    badge: 'Best Seller'
+    badge: 'Best Seller',
+    badgeColor: 'bg-rose-500 text-white',
+    gradient: 'from-slate-900 via-slate-800 to-gray-900',
+    accent: 'bg-slate-700'
   },
   {
-    title: 'Organic Crochet Handcrafted Dolls',
-    subtitle: 'CHEMICAL FREE SOFT PLAYMATES',
-    description: 'Spun from premium organic Egyptian threads. Completely anti-allergic and safe for toddler skin.',
-    image: 'https://images.unsplash.com/photo-1559251606-c623743a6d76?auto=format&fit=crop&q=80&w=800',
+    title: 'Organic Handcrafted Dolls',
+    subtitle: 'Chemical-free soft playmates',
+    description: 'Premium organic Egyptian threads. Completely anti-allergic and perfectly safe for delicate toddler skin.',
+    image: 'https://images.unsplash.com/photo-1559251606-c623743a6d76?auto=format&fit=crop&q=80&w=900',
     link: '/shop?category=dolls',
-    badge: 'Trending Collection'
+    badge: 'New Arrivals',
+    badgeColor: 'bg-emerald-400 text-emerald-900',
+    gradient: 'from-rose-900 via-pink-800 to-fuchsia-900',
+    accent: 'bg-rose-700'
   }
 ];
 
-const MOCK_REVIEWS = [
-  { id: 1, name: 'Aarav Sharma', role: 'Father of 5yo', comment: 'The magnetic block sets are fantastic! Extremely strong magnets and the plastic is durable. High conversion-ready build.', rating: 5 },
-  { id: 2, name: 'Priya Patel', role: 'Mother of 3yo', comment: 'We love the crochet dolls. They are extremely soft, chemical-free, and safe for babies. Flipkart-level trust!', rating: 5 },
-  { id: 3, name: 'Sanjay Verma', role: 'Father of 8yo', comment: 'Remote control buggy runs beautifully on gravel and grass. Shock absorption is incredible.', rating: 5 }
+const REVIEWS = [
+  { id: 1, name: 'Aarav Sharma', role: 'Parent of 5-year-old', comment: 'The magnetic block sets are incredible! Strong connections, vibrant colors, and completely safe. My son plays for hours.', rating: 5, avatar: 'A' },
+  { id: 2, name: 'Priya Patel', role: 'Mother of 3-year-old', comment: 'Love the crochet dolls — so soft, no chemicals, and arrived beautifully packaged. Worth every rupee.', rating: 5, avatar: 'P' },
+  { id: 3, name: 'Sanjay Verma', role: 'Parent of 8-year-old', comment: 'The RC buggy works amazingly on gravel and grass. The shock absorption is real, and my son is obsessed.', rating: 5, avatar: 'S' }
+];
+
+const TRUST_BADGES = [
+  { icon: Truck, title: 'Free Express Shipping', desc: 'On all orders above ₹999 across India', color: 'text-violet-600', bg: 'bg-violet-50' },
+  { icon: ShieldCheck, title: '100% Safe Materials', desc: 'BPA-free, non-toxic & child-safety certified', color: 'text-emerald-600', bg: 'bg-emerald-50' },
+  { icon: RotateCcw, title: '7-Day Easy Returns', desc: 'Hassle-free refund or product replacement', color: 'text-amber-600', bg: 'bg-amber-50' },
 ];
 
 export default function Home() {
-  const { products, categories, loading } = useAppContext();
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const { products, categories, loading, showToast } = useAppContext();
+  const [slide, setSlide] = useState(0);
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterLoading, setNewsletterLoading] = useState(false);
+  const [newsletterSuccess, setNewsletterSuccess] = useState(false);
 
-  // Auto scroll banner carousel
   useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
-    }, 6000);
-    return () => clearInterval(timer);
+    const t = setInterval(() => setSlide(s => (s + 1) % HERO_SLIDES.length), 5500);
+    return () => clearInterval(t);
   }, []);
 
-  const handlePrevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + HERO_SLIDES.length) % HERO_SLIDES.length);
+  const handleNewsletter = (e) => {
+    e.preventDefault();
+    const email = newsletterEmail.trim();
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!email) {
+      showToast('Please enter your email address.', 'error');
+      return;
+    }
+    if (!emailRegex.test(email)) {
+      showToast('Please enter a valid email address.', 'error');
+      return;
+    }
+
+    // Check if already subscribed (localStorage)
+    const subs = JSON.parse(localStorage.getItem('toybox_subscribers') || '[]');
+    if (subs.includes(email)) {
+      showToast('You are already subscribed! 🎉', 'warning');
+      return;
+    }
+
+    setNewsletterLoading(true);
+    // Simulate API call (replace with real endpoint when ready)
+    setTimeout(() => {
+      localStorage.setItem('toybox_subscribers', JSON.stringify([...subs, email]));
+      setNewsletterLoading(false);
+      setNewsletterSuccess(true);
+      setNewsletterEmail('');
+      showToast('Successfully subscribed! Welcome to ToyBox deals 🎁', 'success');
+    }, 1200);
   };
 
-  const handleNextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % HERO_SLIDES.length);
-  };
-
-  const trendingProducts = products.slice(0, 4);
+  const trending = products.slice(0, 4);
   const bestSellers = [...products].sort((a, b) => b.rating - a.rating).slice(4, 8);
-  const featuredProducts = products.slice(2, 6);
+  const featured = products.slice(2, 6);
+  const current = HERO_SLIDES[slide];
 
   return (
-    <div className="bg-[#F1F3F6] pb-12 text-left">
-      
-      {/* 1. Flipkart-style Circular Category Menu Bar */}
-      <div className="bg-white border-b border-slate-200 shadow-[0_1px_3px_rgba(0,0,0,0.03)] py-4 select-none mb-6">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 overflow-x-auto flex justify-start md:justify-center items-center gap-8 md:gap-14 scrollbar-none">
+    <div className="min-h-screen" style={{ background: 'var(--brand-bg)' }}>
+
+      {/* ── Category Pill Bar ── */}
+      <div className="bg-white border-b border-violet-100 py-3 select-none">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 overflow-x-auto flex items-center gap-2 md:gap-3 scrollbar-none flex-nowrap pb-0.5">
+          <Link to="/shop" className="shrink-0 px-4 py-1.5 bg-violet-700 text-white text-xs font-bold rounded-full hover:bg-violet-800 transition-colors whitespace-nowrap">
+            All Toys
+          </Link>
           {categories.map((cat) => (
-            <Link 
+            <Link
               key={cat._id}
               to={`/shop?category=${cat.slug}`}
-              className="flex flex-col items-center shrink-0 group text-center"
+              className="shrink-0 px-4 py-1.5 bg-violet-50 text-violet-700 text-xs font-semibold rounded-full hover:bg-violet-100 transition-colors border border-violet-100 whitespace-nowrap"
             >
-              <div className="w-14 h-14 rounded-full overflow-hidden bg-slate-50 border border-slate-150 flex items-center justify-center p-1 group-hover:scale-105 group-hover:border-slate-300 transition-all duration-[180ms] ease-in-out">
-                <img 
-                  src={cat.image || 'https://images.unsplash.com/photo-1539627831859-a911cf04b3cd?auto=format&fit=crop&q=80&w=200'} 
-                  alt={cat.name} 
-                  className="w-full h-full object-contain"
-                />
-              </div>
-              <span className="text-[11px] font-bold text-[#212121] mt-1.5 group-hover:text-[#2874F0] tracking-wide transition-colors">
-                {cat.name}
-              </span>
+              {cat.name}
             </Link>
           ))}
         </div>
       </div>
 
-      {/* 2. Hero Promotional Carousel Banner */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 mb-8">
-        <div className="relative bg-white rounded-[8px] border border-slate-200 shadow-sm overflow-hidden h-[260px] md:h-[340px] group">
-          
-          {/* Banner items */}
-          <div className="absolute inset-0 flex items-center justify-between">
-            {/* Left Column: Text description */}
-            <div className="p-6 md:p-12 max-w-lg md:max-w-xl z-10 text-left flex flex-col justify-center h-full">
-              <span className="text-[10px] font-extrabold text-white bg-[#FB641B] px-2 py-0.5 rounded-[4px] uppercase tracking-wide w-max mb-3">
-                {HERO_SLIDES[currentSlide].badge}
+      {/* ── Hero Banner ── */}
+      <div className="max-w-7xl mx-auto px-4 md:px-6 pt-6 mb-8">
+        <div className="relative rounded-3xl overflow-hidden h-[260px] md:h-[360px] bg-white border border-violet-100 shadow-lg shadow-violet-100 group">
+
+          <div className="absolute inset-0 flex h-full">
+
+            {/* LEFT: Text panel */}
+            <div className={`relative w-full md:w-1/2 h-full bg-gradient-to-br ${current.gradient} flex flex-col justify-center px-8 md:px-12 py-8 z-10`}>
+              {/* subtle circle decoration */}
+              <div className="absolute top-0 right-0 w-40 h-40 rounded-full bg-white/5 -translate-y-1/2 translate-x-1/2" />
+              <div className="absolute bottom-0 left-0 w-24 h-24 rounded-full bg-white/5 translate-y-1/2 -translate-x-1/2" />
+
+              <span className={`inline-block ${current.badgeColor} text-[10px] font-black px-3 py-1 rounded-full mb-4 uppercase tracking-widest w-max`}>
+                {current.badge}
               </span>
-              <h1 className="text-xl md:text-[34px] font-bold text-[#212121] leading-tight mb-2 font-sans">
-                {HERO_SLIDES[currentSlide].title}
+              <h1 className="text-xl md:text-3xl font-black text-white leading-tight mb-1.5" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                {current.title}
               </h1>
-              <p className="text-slate-500 text-xs md:text-sm font-normal mb-5 leading-snug hidden sm:block">
-                {HERO_SLIDES[currentSlide].description}
-              </p>
-              <Link 
-                to={HERO_SLIDES[currentSlide].link} 
-                className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase px-6 py-[12px] rounded-[6px] w-max shadow-sm transition-colors text-center"
+              <p className="text-white/70 text-xs md:text-sm font-medium mb-1">{current.subtitle}</p>
+              <p className="text-white/50 text-xs hidden md:block mb-6 leading-relaxed max-w-xs">{current.description}</p>
+              <Link
+                to={current.link}
+                className="inline-flex items-center gap-2 bg-white text-gray-900 font-bold text-xs md:text-sm px-5 py-2.5 rounded-xl hover:bg-slate-50 transition-colors shadow-md w-max mt-2 md:mt-0"
               >
-                Shop Now
+                Shop Now <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
 
-            {/* Right Column: Promotional Image */}
-            <div className="hidden md:block w-1/2 h-full select-none relative overflow-hidden">
-              <img 
-                src={HERO_SLIDES[currentSlide].image} 
-                alt="Promo Banner" 
-                className="w-full h-full object-cover"
+            {/* RIGHT: Full visible image */}
+            <div className="hidden md:block md:w-1/2 h-full relative overflow-hidden">
+              <img
+                src={current.image}
+                alt={current.title}
+                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-105"
               />
-              <div className="absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-white to-transparent"></div>
+              {/* fade blend on left edge */}
+              <div className={`absolute inset-y-0 left-0 w-16 bg-gradient-to-r ${current.gradient} to-transparent`} />
             </div>
           </div>
 
-          {/* Slider Controllers */}
-          <button 
-            onClick={handlePrevSlide}
-            className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-white/95 hover:bg-white text-slate-700 border border-slate-200 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity outline-none"
-          >
-            <ChevronLeft className="w-4.5 h-4.5" />
+          {/* Slide dots */}
+          <div className="absolute bottom-4 left-1/2 md:left-1/4 -translate-x-1/2 flex gap-2 z-20">
+            {HERO_SLIDES.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setSlide(i)}
+                className={`h-1.5 rounded-full transition-all ${i === slide ? 'bg-white w-6' : 'bg-white/40 w-1.5'}`}
+              />
+            ))}
+          </div>
+
+          {/* Nav arrows */}
+          <button onClick={() => setSlide(s => (s - 1 + HERO_SLIDES.length) % HERO_SLIDES.length)}
+            className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 hover:bg-white text-gray-700 border border-slate-200 rounded-full flex items-center justify-center shadow-md transition-all opacity-0 group-hover:opacity-100 z-20">
+            <ChevronLeft className="w-4 h-4" />
           </button>
-          <button 
-            onClick={handleNextSlide}
-            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-white/95 hover:bg-white text-slate-700 border border-slate-200 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity outline-none"
-          >
-            <ChevronRight className="w-4.5 h-4.5" />
+          <button onClick={() => setSlide(s => (s + 1) % HERO_SLIDES.length)}
+            className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 bg-white/90 hover:bg-white text-gray-700 border border-slate-200 rounded-full flex items-center justify-center shadow-md transition-all opacity-0 group-hover:opacity-100 z-20">
+            <ChevronRight className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      {/* 3. Core Flipkart Value Trust Badges */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white border border-slate-200 rounded-[8px] p-4 flex items-center gap-3.5 shadow-sm">
-          <Truck className="w-8 h-8 text-[#2874F0] shrink-0" />
-          <div>
-            <h4 className="font-bold text-[#212121] text-xs uppercase tracking-wide">Free Express Shipping</h4>
-            <p className="text-[11px] text-[#878787] font-medium">Get complimentary express delivery on orders over ₹999</p>
-          </div>
-        </div>
-        
-        <div className="bg-white border border-slate-200 rounded-[8px] p-4 flex items-center gap-3.5 shadow-sm">
-          <ShieldCheck className="w-8 h-8 text-[#388E3C] shrink-0" />
-          <div>
-            <h4 className="font-bold text-[#212121] text-xs uppercase tracking-wide">100% Safe Materials</h4>
-            <p className="text-[11px] text-[#878787] font-medium">BPA-Free, non-toxic, child-safe developmental toys only</p>
-          </div>
-        </div>
-
-        <div className="bg-white border border-slate-200 rounded-[8px] p-4 flex items-center gap-3.5 shadow-sm">
-          <RotateCcw className="w-8 h-8 text-[#FB641B] shrink-0" />
-          <div>
-            <h4 className="font-bold text-[#212121] text-xs uppercase tracking-wide">7 Days Easy Return</h4>
-            <p className="text-[11px] text-[#878787] font-medium">No hassle refund or product replacement sandbox setup</p>
-          </div>
+      {/* ── Trust Badges ── */}
+      <div className="max-w-7xl mx-auto px-4 md:px-6 mb-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {TRUST_BADGES.map(({ icon: Icon, title, desc, color, bg }) => (
+            <div key={title} className="bg-white rounded-2xl border border-violet-100 p-5 flex items-center gap-4 hover:shadow-md hover:shadow-violet-50 transition-all">
+              <div className={`w-12 h-12 ${bg} rounded-2xl flex items-center justify-center shrink-0`}>
+                <Icon className={`w-6 h-6 ${color}`} />
+              </div>
+              <div>
+                <h4 className="font-bold text-gray-800 text-sm">{title}</h4>
+                <p className="text-xs text-gray-500 mt-0.5">{desc}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
-      {/* 4. Trending Toys Section (Flipkart grid style) */}
-      <section className="max-w-7xl mx-auto px-4 md:px-6 mb-8">
-        <div className="bg-white border border-slate-200 rounded-[8px] p-4 md:p-6 shadow-sm">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-5">
+      {/* ── Trending Products ── */}
+      <section className="max-w-7xl mx-auto px-4 md:px-6 mb-10">
+        <div className="bg-white rounded-3xl border border-violet-100 p-6 md:p-8 shadow-sm">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-base md:text-lg font-bold text-[#212121]">Trending Products</h2>
-              <p className="text-[11px] text-[#878787] font-normal">Toys bought recently by happy families across India</p>
+              <h2 className="text-xl font-bold text-indigo-950" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                🔥 Trending Right Now
+              </h2>
+              <p className="text-sm text-gray-500 mt-0.5">Toys families are loving across India</p>
             </div>
-            <Link 
-              to="/shop" 
-              className="bg-[#2874F0] text-white hover:bg-[#1a5ebf] text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-[6px] shadow-sm transition-colors"
-            >
-              View All
+            <Link to="/shop" className="flex items-center gap-1.5 text-sm font-semibold text-violet-700 hover:text-violet-900 bg-violet-50 hover:bg-violet-100 px-4 py-2 rounded-xl transition-all">
+              View All <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
-
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {loading ? (
-              Array(4).fill(0).map((_, i) => <SkeletonCard key={i} />)
-            ) : (
-              trendingProducts.map((prod) => <ProductCard key={prod._id} product={prod} />)
-            )}
+            {loading ? Array(4).fill(0).map((_, i) => <SkeletonCard key={i} />) :
+              trending.map(prod => <ProductCard key={prod._id} product={prod} />)}
           </div>
         </div>
       </section>
 
-      {/* 5. Featured Brand Spotlight */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 mb-8">
-        <div className="bg-white border border-slate-200 rounded-[8px] p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-sm">
-          <div className="max-w-xl text-left flex flex-col justify-center">
-            <span className="text-[10px] font-bold text-[#2874F0] bg-slate-100 px-2 py-0.5 rounded-sm uppercase tracking-wide w-max mb-2">
-              Featured Spotlights
+      {/* ── Feature Spotlight ── */}
+      <div className="max-w-7xl mx-auto px-4 md:px-6 mb-10">
+        <div className="bg-gradient-to-br from-violet-700 to-purple-800 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 shadow-xl shadow-violet-200 overflow-hidden relative">
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-1/2 -translate-x-1/2" />
+          </div>
+          <div className="relative z-10 max-w-md text-white">
+            <span className="inline-block bg-white/20 backdrop-blur-sm text-white text-[11px] font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-widest">
+              ✨ Featured Collection
             </span>
-            <h2 className="text-xl md:text-2xl font-bold text-[#212121] leading-tight mb-3 font-sans">
-              MagConstruct Geometric Magnetic Building Blocks
+            <h2 className="text-2xl md:text-3xl font-black mb-3 leading-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              MagConstruct Magnetic Building Tiles
             </h2>
-            <p className="text-slate-500 text-xs md:text-sm font-normal mb-6 leading-relaxed">
-              Explore STEM-approved modular magnetic tiles. Clinically designed to foster spatial reasoning, creative thinking, and structural geometry in growing toddlers. Features heavy-duty copper rivets and non-toxic safe ABS structure.
+            <p className="text-white/70 text-sm leading-relaxed mb-6">
+              STEM-approved modular magnetic tiles that foster spatial reasoning, creative thinking, and structural geometry. Non-toxic ABS with heavy-duty copper rivets.
             </p>
-            <Link 
-              to="/shop?category=building-blocks" 
-              className="bg-[#FB641B] hover:bg-[#e15610] text-white font-bold text-xs uppercase px-6 py-[12px] rounded-[6px] w-max shadow-sm transition-colors"
+            <Link
+              to="/shop?category=building-blocks"
+              className="inline-flex items-center gap-2 bg-white text-violet-800 font-bold text-sm px-6 py-3 rounded-2xl hover:bg-violet-50 transition-colors shadow-lg"
             >
-              Shop Magnetic Kits
+              Explore Kits <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-
-          <div className="w-full md:w-1/2 aspect-video md:aspect-[16/10] rounded-[8px] overflow-hidden border border-slate-100 bg-slate-50">
-            <img 
-              src="https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&q=80&w=600" 
-              alt="Building spotlight" 
+          <div className="relative z-10 w-full md:w-80 aspect-square md:aspect-[4/3] rounded-2xl overflow-hidden border-4 border-white/20 shadow-xl shrink-0">
+            <img
+              src="https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&q=80&w=600"
+              alt="Feature"
               className="w-full h-full object-cover"
             />
           </div>
         </div>
       </div>
 
-      {/* 6. Best Sellers Catalog Compartment */}
-      <section className="max-w-7xl mx-auto px-4 md:px-6 mb-8">
-        <div className="bg-white border border-slate-200 rounded-[8px] p-4 md:p-6 shadow-sm">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-5">
+      {/* ── Best Sellers ── */}
+      <section className="max-w-7xl mx-auto px-4 md:px-6 mb-10">
+        <div className="bg-white rounded-3xl border border-violet-100 p-6 md:p-8 shadow-sm">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <h2 className="text-base md:text-lg font-bold text-[#212121]">Best Sellers</h2>
-              <p className="text-[11px] text-[#878787] font-normal">Highly rated and approved by parents and educators</p>
+              <h2 className="text-xl font-bold text-indigo-950" style={{ fontFamily: 'Poppins, sans-serif' }}>
+                ⭐ Best Sellers
+              </h2>
+              <p className="text-sm text-gray-500 mt-0.5">Top-rated by parents and educators across the country</p>
             </div>
-            <Link 
-              to="/shop" 
-              className="bg-[#2874F0] text-white hover:bg-[#1a5ebf] text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-[6px] shadow-sm transition-colors"
-            >
-              View All
+            <Link to="/shop" className="flex items-center gap-1.5 text-sm font-semibold text-violet-700 hover:text-violet-900 bg-violet-50 hover:bg-violet-100 px-4 py-2 rounded-xl transition-all">
+              View All <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
-
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {loading ? (
-              Array(4).fill(0).map((_, i) => <SkeletonCard key={i} />)
-            ) : (
-              bestSellers.map((prod) => <ProductCard key={prod._id} product={prod} />)
-            )}
+            {loading ? Array(4).fill(0).map((_, i) => <SkeletonCard key={i} />) :
+              bestSellers.map(prod => <ProductCard key={prod._id} product={prod} />)}
           </div>
         </div>
       </section>
 
-      {/* 7. Featured Products Grid */}
-      <section className="max-w-7xl mx-auto px-4 md:px-6 mb-8">
-        <div className="bg-white border border-slate-200 rounded-[8px] p-4 md:p-6 shadow-sm">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-5">
-            <div>
-              <h2 className="text-base md:text-lg font-bold text-[#212121]">Featured Products</h2>
-              <p className="text-[11px] text-[#878787] font-normal">Handpicked premium toys curated for cognitive milestones</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            {loading ? (
-              Array(4).fill(0).map((_, i) => <SkeletonCard key={i} />)
-            ) : (
-              featuredProducts.map((prod) => <ProductCard key={prod._id} product={prod} />)
-            )}
-          </div>
-        </div>
-      </section>
-
-      {/* 8. Top Brands Strip */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 mb-8 select-none text-slate-800">
-        <div className="bg-white border border-slate-200 rounded-[8px] p-5 shadow-sm text-center">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-4">OUR TRUSTED MANUFACTURER BRANDS</span>
-          <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 font-extrabold text-sm uppercase text-slate-400">
-            <span>LEGO</span>
-            <span>HAMLEYS</span>
-            <span>DISNEY STORE</span>
-            <span>MELISSA & DOUG</span>
-            <span>FISHER-PRICE</span>
+      {/* ── Brand Strip ── */}
+      <div className="max-w-7xl mx-auto px-4 md:px-6 mb-10 select-none">
+        <div className="bg-white rounded-3xl border border-violet-100 px-8 py-6 shadow-sm text-center">
+          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-5">Trusted Brands We Carry</p>
+          <div className="flex flex-wrap items-center justify-center gap-8 md:gap-14">
+            {['LEGO', 'HAMLEYS', 'DISNEY', 'MELISSA & DOUG', 'FISHER-PRICE'].map(brand => (
+              <span key={brand} className="text-sm font-black text-gray-300 hover:text-violet-400 transition-colors cursor-default tracking-wider">
+                {brand}
+              </span>
+            ))}
           </div>
         </div>
       </div>
 
-      {/* 9. Parent Testimonials Section */}
+      {/* ── Testimonials ── */}
       <section className="max-w-7xl mx-auto px-4 md:px-6 mb-12">
         <div className="text-center mb-8">
-          <h2 className="text-base md:text-lg font-bold text-[#212121]">What Parents Say</h2>
-          <p className="text-[11px] text-[#878787] font-normal">Authentic reviews from families who shopped on ToyBox</p>
+          <h2 className="text-xl font-bold text-indigo-950" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            💬 What Parents Say
+          </h2>
+          <p className="text-sm text-gray-500 mt-1">Real reviews from families who shop with ToyBox</p>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {MOCK_REVIEWS.map((rev) => (
-            <div key={rev.id} className="bg-white border border-slate-200 rounded-[8px] p-5 text-left shadow-sm flex flex-col justify-between min-h-[140px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.04)] transition-shadow duration-[180ms] ease-in-out">
-              <div>
-                <div className="flex gap-0.5 text-[#FF9F00] mb-2 fill-current">
-                  {Array(rev.rating).fill(0).map((_, idx) => (
-                    <Star key={idx} className="w-3.5 h-3.5 fill-current" />
-                  ))}
-                </div>
-                <p className="text-xs font-medium text-slate-600 leading-relaxed italic">
-                  "{rev.comment}"
-                </p>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {REVIEWS.map(rev => (
+            <div key={rev.id} className="bg-white rounded-2xl border border-violet-100 p-6 hover:shadow-md hover:shadow-violet-50 transition-all flex flex-col gap-4">
+              <div className="flex gap-0.5">
+                {Array(rev.rating).fill(0).map((_, i) => (
+                  <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
+                ))}
               </div>
-              <div className="mt-4 border-t border-slate-100 pt-2 flex justify-between items-center text-[11px] font-bold text-slate-500">
-                <span>{rev.name}</span>
-                <span className="text-[#878787] font-normal">{rev.role}</span>
+              <p className="text-sm text-gray-600 leading-relaxed flex-1">"{rev.comment}"</p>
+              <div className="flex items-center gap-3 border-t border-violet-50 pt-3">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                  {rev.avatar}
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-gray-800">{rev.name}</p>
+                  <p className="text-xs text-gray-400">{rev.role}</p>
+                </div>
               </div>
             </div>
           ))}
         </div>
       </section>
 
-      {/* 10. Corporate Standard E-Commerce Footer */}
-      <footer className="bg-[#172337] text-white pt-12 pb-6 border-t border-slate-700">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-left text-xs font-normal pb-8 border-b border-slate-800">
-          <div>
-            <h5 className="text-[10px] text-slate-450 uppercase font-bold tracking-wider mb-3">ABOUT TOYBOX</h5>
-            <ul className="flex flex-col gap-2 text-slate-400">
-              <li><Link to="/about" className="hover:underline">Who We Are</Link></li>
-              <li><Link to="/careers" className="hover:underline">Careers</Link></li>
-              <li><Link to="/press" className="hover:underline">Press Releases</Link></li>
-              <li><Link to="/corporate" className="hover:underline">Corporate Information</Link></li>
-            </ul>
-          </div>
-          
-          <div>
-            <h5 className="text-[10px] text-slate-450 uppercase font-bold tracking-wider mb-3">HELP & SUPPORT</h5>
-            <ul className="flex flex-col gap-2 text-slate-400">
-              <li><Link to="/payments" className="hover:underline">Payments</Link></li>
-              <li><Link to="/shipping" className="hover:underline">Shipping & Logistics</Link></li>
-              <li><Link to="/cancellation" className="hover:underline">Cancellation & Returns</Link></li>
-              <li><Link to="/faq" className="hover:underline">FAQ</Link></li>
-            </ul>
-          </div>
+      {/* ── Newsletter CTA ── */}
+      <div className="max-w-7xl mx-auto px-4 md:px-6 mb-12">
+        <div className="bg-gradient-to-r from-amber-400 to-orange-400 rounded-3xl p-8 md:p-12 text-center shadow-xl shadow-amber-100">
+          <Sparkles className="w-10 h-10 text-amber-900/50 mx-auto mb-3" />
+          <h2 className="text-2xl font-black text-amber-900 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            Exclusive Deals, Just for You
+          </h2>
+          <p className="text-amber-800/70 text-sm mb-6">Join 50,000+ parents getting weekly toy deals, parenting tips &amp; early sale access.</p>
 
-          <div>
-            <h5 className="text-[10px] text-slate-450 uppercase font-bold tracking-wider mb-3">CONSUMER POLICY</h5>
-            <ul className="flex flex-col gap-2 text-slate-400">
-              <li><Link to="/privacy" className="hover:underline">Privacy Policy</Link></li>
-              <li><Link to="/terms" className="hover:underline">Terms of Use</Link></li>
-              <li><Link to="/safety" className="hover:underline">Safety Certification</Link></li>
-              <li><Link to="/sitemap" className="hover:underline">Sitemap</Link></li>
-            </ul>
-          </div>
-
-          <div>
-            <h5 className="text-[10px] text-slate-450 uppercase font-bold tracking-wider mb-3">GET IN TOUCH</h5>
-            <ul className="flex flex-col gap-2 text-slate-400">
-              <li><span>Email: support@toybox.com</span></li>
-              <li><span>Mobile: 1800-TOY-BOX-CORP</span></li>
-              <li><span>Vasant Kunj Center, New Delhi, India</span></li>
-            </ul>
-          </div>
+          {newsletterSuccess ? (
+            <div className="flex flex-col items-center gap-3 bg-white/30 backdrop-blur-sm rounded-2xl px-8 py-5 max-w-md mx-auto">
+              <span className="text-4xl">🎉</span>
+              <p className="text-amber-900 font-bold text-base">You're on the list!</p>
+              <p className="text-amber-800/70 text-sm">Check your inbox for exclusive deals &amp; early sale alerts.</p>
+              <button
+                onClick={() => setNewsletterSuccess(false)}
+                className="text-xs text-amber-900/60 hover:text-amber-900 underline mt-1"
+              >
+                Subscribe another email
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleNewsletter} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+              <input
+                type="email"
+                placeholder="Enter your email address"
+                value={newsletterEmail}
+                onChange={(e) => setNewsletterEmail(e.target.value)}
+                disabled={newsletterLoading}
+                className="flex-1 px-5 py-3 rounded-2xl outline-none text-sm bg-white/90 placeholder-amber-700/50 font-medium text-amber-900 disabled:opacity-60"
+              />
+              <button
+                type="submit"
+                disabled={newsletterLoading}
+                className="px-6 py-3 bg-amber-900 hover:bg-amber-950 disabled:opacity-70 text-white font-bold text-sm rounded-2xl transition-colors whitespace-nowrap flex items-center justify-center gap-2 min-w-[140px]"
+              >
+                {newsletterLoading ? (
+                  <><span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" /> Subscribing...</>
+                ) : (
+                  'Subscribe Free 🎁'
+                )}
+              </button>
+            </form>
+          )}
         </div>
-
-        <div className="max-w-7xl mx-auto px-4 md:px-6 pt-6 flex flex-col md:flex-row items-center justify-between text-[11px] text-slate-400">
-          <span>© 2026 ToyBox Plus Premium. All Rights Reserved. Sandbox Simulation Mode.</span>
-          <span className="mt-2 md:mt-0 flex gap-4">
-            <span className="hover:underline cursor-pointer">PCI-DSS Secured Payments</span>
-            <span className="hover:underline cursor-pointer">100% Genuine Toys guarantee</span>
-          </span>
-        </div>
-      </footer>
+      </div>
 
     </div>
   );
