@@ -177,7 +177,7 @@ const MOCK_PRODUCTS = [
 
 export const AppProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('user');
+    const saved = localStorage.getItem('toybox_user');
     return saved ? JSON.parse(saved) : null;
   });
 
@@ -235,6 +235,34 @@ export const AppProvider = ({ children }) => {
 
   useEffect(() => {
     fetchData();
+
+    // Axios interceptor: only auto-logout on genuine token-related 401s.
+    // IMPORTANT: Do NOT intercept 403 (unverified email) — that is handled by the Login page.
+    const interceptor = axios.interceptors.response.use(
+      (response) => response,
+      (error) => {
+        if (error.response && error.response.status === 401) {
+          const errMsg = error.response.data?.message || '';
+          // Only clear session for actual JWT token failures, not for wrong password (401)
+          if (
+            errMsg.toLowerCase().includes('token failed') || 
+            errMsg.toLowerCase().includes('no token') ||
+            errMsg.toLowerCase().includes('jwt')
+          ) {
+            console.warn('JWT token invalid or expired — clearing session.');
+            setUser(null);
+            localStorage.removeItem('toybox_user');
+            setCart([]);
+            setWishlist([]);
+          }
+        }
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axios.interceptors.response.eject(interceptor);
+    };
   }, []);
 
   // Sync Cart and Wishlist once logged in
@@ -280,7 +308,7 @@ export const AppProvider = ({ children }) => {
       if (!isOfflineMode) {
         const res = await axios.post('/api/auth/login', { email, password });
         setUser(res.data);
-        localStorage.setItem('user', JSON.stringify(res.data));
+        localStorage.setItem('toybox_user', JSON.stringify(res.data));
         showToast(`Welcome back, ${res.data.name}! 👋`);
         return res.data;
       } else {
@@ -305,7 +333,7 @@ export const AppProvider = ({ children }) => {
           }]
         };
         setUser(mockUser);
-        localStorage.setItem('user', JSON.stringify(mockUser));
+        localStorage.setItem('toybox_user', JSON.stringify(mockUser));
         showToast(`Welcome back to Sandbox, ${name}! 👋`);
         return mockUser;
       }
@@ -322,7 +350,7 @@ export const AppProvider = ({ children }) => {
         const res = await axios.post('/api/auth/register', { name, email, mobile, password });
         if (res.data.isVerified) {
           setUser(res.data);
-          localStorage.setItem('user', JSON.stringify(res.data));
+          localStorage.setItem('toybox_user', JSON.stringify(res.data));
           showToast('Registration successful! Welcome to ToyBox! 🎈');
         } else {
           showToast('Verification OTP has been sent to your email address! 📬');
@@ -351,7 +379,9 @@ export const AppProvider = ({ children }) => {
 
   const logout = () => {
     setUser(null);
-    localStorage.removeItem('user');
+    localStorage.removeItem('toybox_user');
+    setCart([]);
+    setWishlist([]);
     showToast('Logged out successfully. See you soon! 😊');
   };
 

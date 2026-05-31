@@ -31,7 +31,7 @@ export default function ProductCard({ product }) {
       {/* Image Block */}
       <Link to={`/product/${product._id}`} className="block aspect-square w-full bg-white mb-2 overflow-hidden flex items-center justify-center">
         <img
-          src={product.images[0] || 'https://images.unsplash.com/photo-1539627831859-a911cf04b3cd?auto=format&fit=crop&q=80&w=800'}
+          src={product.images?.[0] || 'https://images.unsplash.com/photo-1539627831859-a911cf04b3cd?auto=format&fit=crop&q=80&w=800'}
           alt={product.name}
           className="w-full h-full object-contain p-1 transform group-hover:scale-[1.02] transition-transform duration-[180ms] ease-in-out"
           loading="lazy"
@@ -55,12 +55,12 @@ export default function ProductCard({ product }) {
           </Link>
 
           {/* Ratings row */}
-          <div className="flex items-center gap-1.5 mt-1">
+          <div className="flex items-center gap-1.5 mt-1 select-none">
             <span className="inline-flex items-center gap-0.5 bg-[#388E3C] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm">
-              {product.rating || 4.4} <Star className="w-2.5 h-2.5 fill-current" />
+              {product.rating !== undefined && product.rating !== null ? Number(product.rating).toFixed(1) : '0.0'} <Star className="w-2.5 h-2.5 fill-current" />
             </span>
             <span className="text-[11px] font-medium text-slate-400">
-              ({product.reviewsCount || 12})
+              ({product.reviewsCount !== undefined && product.reviewsCount !== null ? product.reviewsCount : 0})
             </span>
           </div>
         </div>

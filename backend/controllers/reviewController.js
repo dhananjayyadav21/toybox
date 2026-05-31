@@ -44,7 +44,8 @@ export const createProductReview = async (req, res) => {
     });
 
     await review.save();
-    res.status(201).json({ message: 'Review added successfully', review });
+    const populatedReview = await Review.findById(review._id).populate('user', 'name');
+    res.status(201).json({ message: 'Review added successfully', review: populatedReview });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

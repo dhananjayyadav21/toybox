@@ -46,19 +46,17 @@ export default function ProductDetails() {
   const [comment, setComment] = useState('');
   const [submitLoading, setSubmitLoading] = useState(false);
 
+  // Bulletproof state management for direct link fetches
+  const [productLoading, setProductLoading] = useState(true);
+  const [productError, setProductError] = useState(null);
+
   // Find product from static or API
   useEffect(() => {
     const found = products.find(p => p._id === id);
-    if (found) {
-      setProduct(found);
-      setActiveImageIdx(0);
-      setQty(1);
-      setPincode('');
-      setPincodeResult(null);
 
-      // Fetch reviews
+    const fetchReviews = (prodId) => {
       if (!isOfflineMode) {
-        axios.get(`/api/reviews/product/${id}`)
+        axios.get(`/api/reviews/product/${prodId}`)
           .then(res => setReviews(res.data))
           .catch(err => console.log('Reviews fetch failed'));
       } else {
@@ -66,6 +64,41 @@ export default function ProductDetails() {
           { _id: 'r1', user: { name: 'Sanjay Kumar' }, rating: 5, comment: 'Exceptional build quality, very safe for toddlers, wood is organic and smooth.', createdAt: new Date() },
           { _id: 'r2', user: { name: 'Sneha Rao' }, rating: 4, comment: 'Fun to play with, kept them engaged for hours. Highly recommended!', createdAt: new Date() }
         ]);
+      }
+    };
+
+    if (found) {
+      setProduct(found);
+      setActiveImageIdx(0);
+      setQty(1);
+      setPincode('');
+      setPincodeResult(null);
+      fetchReviews(id);
+      setProductError(null);
+      setProductLoading(false);
+    } else {
+      if (!isOfflineMode) {
+        setProductLoading(true);
+        axios.get(`/api/products/${id}`)
+          .then(res => {
+            setProduct(res.data);
+            setActiveImageIdx(0);
+            setQty(1);
+            setPincode('');
+            setPincodeResult(null);
+            fetchReviews(id);
+            setProductError(null);
+          })
+          .catch(err => {
+            console.log('Deep product fetch failed', err);
+            setProductError("This product could not be found. It might have been deleted, or you re-seeded the database recently (which regenerates random IDs).");
+          })
+          .finally(() => {
+            setProductLoading(false);
+          });
+      } else {
+        setProductError("Offline sandbox catalog does not contain this product ID.");
+        setProductLoading(false);
       }
     }
   }, [id, products, isOfflineMode]);
@@ -79,6 +112,39 @@ export default function ProductDetails() {
       .filter(p => p._id !== product._id && (p.category?.slug === product.category?.slug || p.category === product.category))
       .slice(0, 4);
   }, [product, products]);
+
+  // ─── ALL derived values MUST be computed here (before any early returns) ───
+  // React Rules of Hooks: hooks and values depending on hooks must not be
+  // placed after conditional return statements.
+
+  // Safe reviews array guard
+  const safeReviews = Array.isArray(reviews) ? reviews : [];
+
+  // Real computed average rating from live reviews
+  const averageRating = useMemo(() => {
+    if (safeReviews.length === 0) return product?.rating ? Number(product.rating).toFixed(1) : '0.0';
+    const sum = safeReviews.reduce((acc, curr) => acc + (curr.rating || 0), 0);
+    return (sum / safeReviews.length).toFixed(1);
+  }, [safeReviews, product?.rating]);
+
+  // Rating breakdown weights
+  const ratingsWeight = useMemo(() => {
+    const w = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    safeReviews.forEach(r => {
+      if (w[r.rating] !== undefined) w[r.rating]++;
+    });
+    return w;
+  }, [safeReviews]);
+
+  const totalReviewsCount = safeReviews.length || 1;
+
+  // Pricing helpers (null-safe)
+  const discountPercent = product?.discountPrice && product.price > product.discountPrice
+    ? Math.round(((product.price - product.discountPrice) / product.price) * 100)
+    : 0;
+  const finalPrice = product?.discountPrice && product.discountPrice > 0
+    ? product.discountPrice
+    : (product?.price || 0);
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
@@ -139,27 +205,40 @@ export default function ProductDetails() {
     }
   };
 
-  if (!product) {
+  if (productLoading) {
     return (
       <div className="pt-28 text-center max-w-lg mx-auto min-h-[60vh] flex flex-col justify-center items-center">
         <div className="animate-spin w-8 h-8 border-4 border-[#2874F0] border-t-transparent rounded-full mb-4"></div>
-        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Loading product detail...</p>
+        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest animate-pulse">Scanning Toy Shelves...</p>
       </div>
     );
   }
 
-  const discountPercent = product.discountPrice && product.price > product.discountPrice
-    ? Math.round(((product.price - product.discountPrice) / product.price) * 100)
-    : 0;
+  if (productError || !product) {
+    return (
+      <div className="pt-28 text-center max-w-2xl mx-auto px-4 min-h-[70vh] flex flex-col justify-center items-center select-none">
+        <div className="w-20 h-20 bg-orange-100 rounded-full flex items-center justify-center text-orange-500 mb-6 animate-bounce">
+          <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+        </div>
+        <h2 className="text-xl font-extrabold text-[#212121] mb-2">Toy Not Found! 🧸</h2>
+        <p className="text-xs text-slate-500 font-semibold max-w-md mb-6 leading-relaxed">
+          {productError || "We couldn't locate this item. The database might have been cleared or re-seeded recently, assigning brand new IDs to all active toys."}
+        </p>
+        <div className="flex gap-4">
+          <Link to="/shop" className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase px-6 py-3 rounded-[6px] transition-colors shadow-sm">
+            Browse Toy Shop
+          </Link>
+          <Link to="/" className="border border-slate-350 hover:bg-slate-50 text-[#212121] font-bold text-xs uppercase px-6 py-3 rounded-[6px] transition-colors">
+            Back to Home
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
-  const finalPrice = product.discountPrice && product.discountPrice > 0 ? product.discountPrice : product.price;
-
-  // Rating breakdown
-  const ratingsWeight = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
-  reviews.forEach(r => {
-    if (ratingsWeight[r.rating] !== undefined) ratingsWeight[r.rating]++;
-  });
-  const totalReviewsCount = reviews.length || 1;
+  // (All derived values moved above early returns — see useMemo blocks above)
 
   return (
     <div className="bg-[#F1F3F6] min-h-screen pt-4 pb-12 text-left">
@@ -239,10 +318,10 @@ export default function ProductDetails() {
               {/* Ratings Summary */}
               <div className="flex items-center gap-2 select-none border-b border-slate-100 pb-3">
                 <span className="inline-flex items-center gap-0.5 bg-[#388E3C] text-white text-[11px] font-bold px-2 py-0.5 rounded-sm">
-                  {product.rating || 4.5} <Star className="w-3 h-3 fill-current" />
+                  {averageRating} <Star className="w-3 h-3 fill-current" />
                 </span>
                 <span className="text-xs font-semibold text-[#878787]">
-                  ({reviews.length} Ratings & Verified Reviews)
+                  ({safeReviews.length} Ratings & Verified Reviews)
                 </span>
               </div>
 
@@ -482,12 +561,12 @@ export default function ProductDetails() {
             {/* Verified Reviews list */}
             <div className="lg:col-span-2 flex flex-col gap-4">
               <h3 className="text-sm font-bold text-[#212121] uppercase border-b border-slate-100 pb-2">
-                Parent Experiences ({reviews.length})
+                Parent Experiences ({safeReviews.length})
               </h3>
               
-              {reviews.length > 0 ? (
+              {safeReviews.length > 0 ? (
                 <div className="flex flex-col gap-3 max-h-[420px] overflow-y-auto pr-2">
-                  {reviews.map((rev) => (
+                  {safeReviews.map((rev) => (
                     <div key={rev._id} className="p-4 bg-white border border-slate-200 rounded-[8px] text-left hover:shadow-[0_2px_8px_rgba(0,0,0,0.03)] transition-shadow duration-[180ms] ease-in-out">
                       <div className="flex justify-between items-center text-xs text-slate-400 mb-1">
                         <span className="font-bold text-[#212121]">{rev.user?.name || 'Verified Buyer'}</span>
