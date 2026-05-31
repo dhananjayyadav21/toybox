@@ -2,6 +2,8 @@ import Order from '../models/Order.js';
 import Product from '../models/Product.js';
 import User from '../models/User.js';
 import { generateInvoicePDF } from '../utils/invoiceGenerator.js';
+import { sendEmail } from '../utils/sendEmail.js';
+import { getOrderInvoiceEmailHtml, getOtpEmailHtml } from '../utils/emailTemplate.js';
 
 // @desc    Create new order
 // @route   POST /api/orders
@@ -52,6 +54,39 @@ export const createOrder = async (req, res) => {
 
     // Clear user's cart
     await User.findByIdAndUpdate(req.user._id, { $set: { cart: [] } });
+
+    // Fetch details to send email
+    const populatedOrder = await Order.findById(createdOrder._id)
+      .populate('user', 'name email')
+      .populate({
+        path: 'products.product',
+        select: 'name price'
+      });
+
+    if (populatedOrder && populatedOrder.user) {
+      const itemsList = populatedOrder.products.map(item => 
+        `• ${item.product?.name || 'Toy'} x ${item.quantity} (₹${item.price})`
+      ).join('\n');
+
+      const itemsHtml = populatedOrder.products.map(item => `
+        <tr style="border-bottom: 1px solid #edf2f7;">
+          <td style="padding: 12px; font-size: 13px; color: #2d3748;">${item.product?.name || 'Toy'}</td>
+          <td style="padding: 12px; font-size: 13px; color: #2d3748; text-align: center;">${item.quantity}</td>
+          <td style="padding: 12px; font-size: 13px; color: #2d3748; text-align: right;">₹${item.price}</td>
+        </tr>
+      `).join('');
+
+      await sendEmail({
+        email: populatedOrder.user.email,
+        subject: `ToyBox Order Confirmed! Order #${populatedOrder._id}`,
+        text: `Dear ${populatedOrder.user.name},\n\nThank you for shopping at ToyBox! Your order has been placed successfully.\n\nOrder Details:\nOrder ID: ${populatedOrder._id}\nTotal Amount: ₹${populatedOrder.totalAmount}\nPayment Method: ${populatedOrder.paymentMethod}\n\nItems:\n${itemsList}\n\nWe will ship your developmental toys shortly!\n\nBest regards,\nTeam ToyBox`,
+        html: getOrderInvoiceEmailHtml({
+          order: populatedOrder,
+          userName: populatedOrder.user.name,
+          itemsHtml
+        })
+      });
+    }
 
     res.status(201).json(createdOrder);
   } catch (error) {
@@ -167,6 +202,87 @@ export const downloadInvoice = async (req, res) => {
     res.setHeader('Content-Disposition', `attachment; filename=invoice-${order._id}.pdf`);
 
     generateInvoicePDF(order, res);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Send delivery verification OTP to buyer
+// @route   POST /api/orders/:id/send-otp
+// @access  Private
+export const sendDeliveryOtp = async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id).populate('user', 'name email mobile');
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    // Generate 6-digit OTP code for delivery
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    order.deliveryOtp = otp;
+    order.deliveryOtpExpires = Date.now() + 3600000; // 1 hour expiration
+    await order.save();
+
+    // Send email with OTP code to buyer
+    await sendEmail({
+      email: order.user.email,
+      subject: `ToyBox Order Delivery OTP - #${order._id}`,
+      text: `Dear ${order.user.name},\n\nYour package is arriving! To verify and confirm the delivery of your ToyBox order #${order._id}, please share the following OTP code with the agent:\n\n⭐ Delivery Verification OTP: ${otp}\n\nBest regards,\nTeam ToyBox`,
+      html: getOtpEmailHtml({
+        userName: order.user.name,
+        title: 'Delivery Handover OTP Code',
+        description: `Your package has arrived! To verify and confirm the delivery of your ToyBox order #${order._id}, please share the 6-digit OTP code below with our delivery partner:`,
+        code: otp,
+        actionLabel: 'Secure Delivery OTP',
+        codeColor: '#388E3C'
+      })
+    });
+
+    res.json({ 
+      success: true, 
+      message: 'Delivery OTP sent to customer email successfully!',
+      deliveryOtp: otp // Send back for sandbox testing convenience!
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Confirm delivery with OTP verification
+// @route   POST /api/orders/:id/verify-otp
+// @access  Private
+export const confirmDeliveryWithOtp = async (req, res) => {
+  const { otp } = req.body;
+  try {
+    const order = await Order.findById(req.params.id);
+    if (!order) {
+      return res.status(404).json({ message: 'Order not found' });
+    }
+
+    if (!order.deliveryOtp) {
+      return res.status(400).json({ message: 'No OTP generated for this order yet. Please generate OTP first.' });
+    }
+
+    if (order.deliveryOtp !== otp) {
+      return res.status(400).json({ message: 'Invalid delivery OTP code.' });
+    }
+
+    if (order.deliveryOtpExpires < Date.now()) {
+      return res.status(400).json({ message: 'Delivery OTP code has expired. Please request a new OTP.' });
+    }
+
+    order.orderStatus = 'Delivered';
+    order.paymentStatus = 'Paid'; // Verified delivery clears COD payments
+    order.isDeliveryOtpVerified = true;
+    order.deliveryOtp = undefined;
+    order.deliveryOtpExpires = undefined;
+    
+    const updatedOrder = await order.save();
+    res.json({ 
+      success: true, 
+      order: updatedOrder, 
+      message: 'OTP verified successfully! Order marked as Delivered.' 
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

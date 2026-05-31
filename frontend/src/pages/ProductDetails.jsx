@@ -175,14 +175,14 @@ export default function ProductDetails() {
         </div>
 
         {/* Core Product Layout Panel */}
-        <div className="bg-white border border-slate-200 rounded-sm p-4 md:p-6 shadow-sm mb-6">
+        <div className="bg-white border border-slate-200 rounded-[8px] p-4 md:p-6 shadow-sm mb-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
             
             {/* LEFT COLUMN: Gallery with Thumbnails */}
             <div className="flex flex-col gap-4">
               
               {/* Active Image container */}
-              <div className="border border-slate-200 rounded-[8px] bg-white aspect-square overflow-hidden flex items-center justify-center p-4 relative select-none">
+              <div className="border border-slate-250 rounded-[8px] bg-white aspect-square overflow-hidden flex items-center justify-center p-4 relative select-none">
                 <img
                   src={product.images?.[activeImageIdx] || 'https://images.unsplash.com/photo-1539627831859-a911cf04b3cd?auto=format&fit=crop&q=80&w=800'}
                   alt={product.name}
@@ -203,8 +203,8 @@ export default function ProductDetails() {
                     <button
                       key={idx}
                       onClick={() => setActiveImageIdx(idx)}
-                      className={`w-16 h-16 rounded-[4px] bg-white border overflow-hidden shrink-0 p-1 transition-all ${
-                        activeImageIdx === idx ? 'border-[#2874F0] ring-1 ring-[#2874F0]' : 'border-slate-200 opacity-70 hover:opacity-100'
+                      className={`w-16 h-16 rounded-[6px] bg-white border overflow-hidden shrink-0 p-1 transition-all ${
+                        activeImageIdx === idx ? 'border-[#2874F0] ring-2 ring-sky-100' : 'border-slate-200 opacity-70 hover:opacity-100'
                       }`}
                     >
                       <img src={img} alt="thumbnail" className="w-full h-full object-contain" />
@@ -220,13 +220,13 @@ export default function ProductDetails() {
               
               {/* Category, Brand, Age labels */}
               <div className="flex flex-wrap gap-2 text-[10px] font-bold uppercase select-none">
-                <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-sm border border-slate-200">
+                <span className="bg-slate-50 text-slate-500 px-2 py-0.5 rounded-[4px] border border-slate-200">
                   {product.category?.name || 'Toy'}
                 </span>
-                <span className="bg-slate-100 text-slate-655 px-2 py-0.5 rounded-sm border border-slate-200">
+                <span className="bg-slate-50 text-slate-550 px-2 py-0.5 rounded-[4px] border border-slate-200">
                   Age: {product.ageGroup}
                 </span>
-                <span className="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-sm border border-slate-200">
+                <span className="bg-slate-50 text-slate-500 px-2 py-0.5 rounded-[4px] border border-slate-200">
                   Brand: {product.brand || 'ToyBox'}
                 </span>
               </div>
@@ -236,7 +236,7 @@ export default function ProductDetails() {
                 {product.name}
               </h1>
 
-              {/* Ratings Summary (Flipkart Green Pill style) */}
+              {/* Ratings Summary */}
               <div className="flex items-center gap-2 select-none border-b border-slate-100 pb-3">
                 <span className="inline-flex items-center gap-0.5 bg-[#388E3C] text-white text-[11px] font-bold px-2 py-0.5 rounded-sm">
                   {product.rating || 4.5} <Star className="w-3 h-3 fill-current" />
@@ -247,7 +247,7 @@ export default function ProductDetails() {
               </div>
 
               {/* Pricing section */}
-              <div className="bg-slate-50 border border-slate-150 rounded-sm p-4 flex items-center justify-between">
+              <div className="bg-slate-50 border border-slate-200 rounded-[8px] p-4 flex items-center justify-between">
                 <div>
                   <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Special Price</span>
                   <div className="flex items-baseline gap-2 mt-1">
@@ -275,8 +275,8 @@ export default function ProductDetails() {
                 </div>
               </div>
 
-              {/* Delivery Checker (Amazon/Flipkart Pincode Check) */}
-              <div className="border border-slate-200 rounded-sm p-3.5 bg-white text-xs select-none">
+              {/* Delivery Checker */}
+              <div className="border border-slate-200 rounded-[8px] p-3.5 bg-white text-xs select-none">
                 <h4 className="font-bold text-[#212121] mb-2 uppercase flex items-center gap-1 text-[11px]">
                   <MapPin className="w-3.5 h-3.5 text-[#2874F0]" /> Delivery Options
                 </h4>
@@ -287,11 +287,11 @@ export default function ProductDetails() {
                     value={pincode}
                     onChange={(e) => setPincode(e.target.value)}
                     maxLength={6}
-                    className="border border-slate-300 rounded-[2px] px-3 py-1.5 outline-none text-xs w-full focus:border-slate-450 placeholder-slate-400"
+                    className="border border-slate-300 rounded-[6px] px-3 py-1.5 outline-none text-xs w-full focus:border-slate-450 placeholder-slate-400"
                   />
                   <button 
                     type="submit"
-                    className="px-4 py-1.5 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold rounded-[2px] uppercase text-[11px]"
+                    className="px-4 py-1.5 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold rounded-[6px] uppercase text-[11px] h-9 transition-colors"
                   >
                     Check
                   </button>
@@ -328,7 +328,7 @@ export default function ProductDetails() {
               {/* Tabs Content */}
               <div className="text-[#212121] text-xs md:text-sm leading-relaxed min-h-[80px]">
                 {activeTab === 'story' && (
-                  <p className="font-normal text-slate-600">{product.description}</p>
+                  <p className="font-medium text-slate-600">{product.description}</p>
                 )}
                 {activeTab === 'specs' && (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-2 text-xs font-medium">
@@ -351,7 +351,7 @@ export default function ProductDetails() {
                   </div>
                 )}
                 {activeTab === 'safety' && (
-                  <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 p-3 rounded-sm text-xs font-medium text-amber-850">
+                  <div className="flex items-start gap-2 bg-amber-50 border border-amber-200 p-3 rounded-[6px] text-xs font-medium text-amber-850">
                     <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                     <p>
                       Safety Tested. Spun from natural wood composites and GOTS certified organic fibers. Please supervise children under 3 years due to small puzzle elements.
@@ -360,7 +360,7 @@ export default function ProductDetails() {
                 )}
               </div>
 
-              {/* Quantity Select & Sticky Purchase Options (Amazon Buy Block Layout) */}
+              {/* Quantity Select & Sticky Purchase Options */}
               {product.stock > 0 && (
                 <div className="border-t border-slate-100 pt-4 flex flex-wrap items-center gap-3">
                   
@@ -370,7 +370,7 @@ export default function ProductDetails() {
                     <select 
                       value={qty}
                       onChange={(e) => setQty(Number(e.target.value))}
-                      className="bg-white border border-slate-350 rounded-sm p-1 px-2.5 font-bold outline-none text-slate-800"
+                      className="bg-white border border-slate-300 rounded-[6px] p-1 px-2.5 font-bold outline-none text-slate-800 h-9"
                     >
                       {Array.from({ length: Math.min(10, product.stock) }, (_, i) => i + 1).map(n => (
                         <option key={n} value={n}>{n}</option>
@@ -378,24 +378,24 @@ export default function ProductDetails() {
                     </select>
                   </div>
 
-                  {/* Actions buttons */}
+                  {/* Actions buttons (height 44px desktop, 40px mobile) */}
                   <div className="flex-1 flex gap-2 min-w-[280px]">
                     <button 
                       onClick={() => addToCart(product._id, qty)}
-                      className="h-11 bg-[#FF9F00] hover:bg-[#e68e00] text-[#212121] font-bold text-xs uppercase rounded-sm shadow-sm flex items-center justify-center gap-1.5 flex-1 transition-colors outline-none"
+                      className="h-10 md:h-11 bg-[#FF9F00] hover:bg-[#e68e00] text-[#212121] font-bold text-xs uppercase rounded-[6px] shadow-sm flex items-center justify-center gap-1.5 flex-1 transition-colors outline-none"
                     >
                       <ShoppingCart className="w-4 h-4" /> Add to Basket
                     </button>
                     <button 
                       onClick={handleBuyNow}
-                      className="h-11 bg-[#FB641B] hover:bg-[#e15610] text-white font-bold text-xs uppercase rounded-sm shadow-sm flex items-center justify-center gap-1.5 flex-1 transition-colors outline-none"
+                      className="h-10 md:h-11 bg-[#FB641B] hover:bg-[#e15610] text-white font-bold text-xs uppercase rounded-[6px] shadow-sm flex items-center justify-center gap-1.5 flex-1 transition-colors outline-none"
                     >
                       <Zap className="w-4 h-4" /> Buy Now
                     </button>
                     <button 
                       onClick={() => toggleWishlist(product._id)}
-                      className={`p-3 border rounded-sm shadow-sm transition-colors ${
-                        isInWishlist ? 'border-red-250 bg-rose-50 text-red-500' : 'border-slate-300 hover:bg-slate-50 text-slate-400'
+                      className={`p-3 border rounded-[6px] shadow-sm transition-all h-10 md:h-11 flex items-center justify-center ${
+                        isInWishlist ? 'border-red-250 bg-rose-50 text-red-500 hover:bg-rose-100' : 'border-slate-300 hover:bg-slate-50 text-slate-400'
                       }`}
                     >
                       <Heart className={`w-4.5 h-4.5 ${isInWishlist ? 'fill-current' : ''}`} />
@@ -411,7 +411,7 @@ export default function ProductDetails() {
         </div>
 
         {/* CUSTOMER REVIEWS GRID */}
-        <section className="bg-white border border-slate-200 rounded-sm p-4 md:p-6 shadow-sm mb-6 text-left">
+        <section className="bg-white border border-slate-200 rounded-[8px] p-4 md:p-6 shadow-sm mb-6 text-left">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             {/* Reviews summary bar charts */}
@@ -422,14 +422,14 @@ export default function ProductDetails() {
               </div>
 
               {/* Progress bars */}
-              <div className="bg-slate-50 border border-slate-150 rounded-sm p-4 flex flex-col gap-2">
+              <div className="bg-slate-50 border border-slate-200 rounded-[8px] p-4 flex flex-col gap-2">
                 {[5, 4, 3, 2, 1].map(stars => {
                   const count = ratingsWeight[stars] || 0;
                   const percentage = Math.round((count / totalReviewsCount) * 100);
                   return (
                     <div key={stars} className="flex items-center gap-2 text-xs font-semibold text-slate-500">
                       <span className="w-6 shrink-0">{stars} ★</span>
-                      <div className="flex-1 h-2 bg-slate-200 rounded-sm overflow-hidden">
+                      <div className="flex-1 h-2 bg-slate-250 rounded-sm overflow-hidden">
                         <div className="h-full bg-[#388E3C] rounded-sm" style={{ width: `${percentage}%` }}></div>
                       </div>
                       <span className="w-12 text-right text-slate-400">{count} reviews</span>
@@ -439,7 +439,7 @@ export default function ProductDetails() {
               </div>
 
               {/* Review submit forms */}
-              <form onSubmit={handleReviewSubmit} className="border border-slate-200 rounded-sm p-4 flex flex-col gap-3">
+              <form onSubmit={handleReviewSubmit} className="border border-slate-200 rounded-[8px] p-4 flex flex-col gap-3">
                 <h4 className="font-bold text-[#212121] text-xs uppercase mb-1">Add a verified review</h4>
                 
                 <div>
@@ -447,7 +447,7 @@ export default function ProductDetails() {
                   <select 
                     value={rating} 
                     onChange={(e) => setRating(Number(e.target.value))}
-                    className="bg-white border border-slate-300 rounded-sm p-1 text-xs font-bold outline-none"
+                    className="bg-white border border-slate-300 rounded-[6px] p-1.5 text-xs font-bold outline-none h-9 w-full"
                   >
                     <option value={5}>5 Stars ★★★★★</option>
                     <option value={4}>4 Stars ★★★★</option>
@@ -465,14 +465,14 @@ export default function ProductDetails() {
                     required
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
-                    className="w-full border border-slate-350 rounded-sm p-2 text-xs outline-none focus:border-slate-500 placeholder-slate-400"
+                    className="w-full border border-slate-300 rounded-[6px] p-2.5 text-xs outline-none focus:border-slate-500 placeholder-slate-400"
                   ></textarea>
                 </div>
 
                 <button
                   type="submit"
                   disabled={submitLoading}
-                  className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-[11px] uppercase py-2.5 rounded-sm"
+                  className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-[11px] uppercase py-2.5 rounded-[6px] h-10 transition-colors"
                 >
                   {submitLoading ? 'Posting...' : 'Submit Feedback'}
                 </button>
@@ -488,24 +488,24 @@ export default function ProductDetails() {
               {reviews.length > 0 ? (
                 <div className="flex flex-col gap-3 max-h-[420px] overflow-y-auto pr-2">
                   {reviews.map((rev) => (
-                    <div key={rev._id} className="p-4 bg-white border border-slate-150 rounded-sm text-left">
+                    <div key={rev._id} className="p-4 bg-white border border-slate-200 rounded-[8px] text-left hover:shadow-[0_2px_8px_rgba(0,0,0,0.03)] transition-shadow duration-[180ms] ease-in-out">
                       <div className="flex justify-between items-center text-xs text-slate-400 mb-1">
                         <span className="font-bold text-[#212121]">{rev.user?.name || 'Verified Buyer'}</span>
                         <span>{new Date(rev.createdAt).toLocaleDateString()}</span>
                       </div>
                       
-                      <div className="inline-flex items-center gap-0.5 bg-[#388E3C] text-white text-[10px] font-bold px-1 py-0.2 rounded-sm mb-2">
+                      <div className="inline-flex items-center gap-0.5 bg-[#388E3C] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm mb-2">
                         {rev.rating} <Star className="w-2.5 h-2.5 fill-current" />
                       </div>
 
-                      <p className="text-xs font-normal text-slate-650 leading-relaxed">
+                      <p className="text-xs font-medium text-slate-600 leading-relaxed">
                         {rev.comment}
                       </p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="bg-slate-50 border border-slate-150 p-12 text-center rounded-sm">
+                <div className="bg-slate-50 border border-slate-150 p-12 text-center rounded-[8px]">
                   <MessageSquare className="w-8 h-8 text-slate-300 mx-auto block mb-2" />
                   <h4 className="font-bold text-slate-800 text-xs uppercase">No Feedback Posted Yet</h4>
                   <p className="text-xs text-slate-400 mt-1">Be the first parent to share purchase feedback!</p>
@@ -518,7 +518,7 @@ export default function ProductDetails() {
 
         {/* RELATED PRODUCTS */}
         {relatedProducts.length > 0 && (
-          <section className="bg-white border border-slate-200 rounded-sm p-4 md:p-6 shadow-sm select-none">
+          <section className="bg-white border border-slate-200 rounded-[8px] p-4 md:p-6 shadow-sm select-none">
             <h3 className="text-sm font-bold text-[#212121] uppercase mb-4 border-b border-slate-100 pb-2.5">
               Related Magical Products
             </h3>

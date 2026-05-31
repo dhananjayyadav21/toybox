@@ -74,22 +74,22 @@ export default function Home() {
     <div className="bg-[#F1F3F6] pb-12 text-left">
       
       {/* 1. Flipkart-style Circular Category Menu Bar */}
-      <div className="bg-white border-b border-slate-200 shadow-sm py-4 select-none mb-4">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 overflow-x-auto flex justify-start md:justify-center items-center gap-8 md:gap-16 scrollbar-none">
+      <div className="bg-white border-b border-slate-200 shadow-[0_1px_3px_rgba(0,0,0,0.03)] py-4 select-none mb-6">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 overflow-x-auto flex justify-start md:justify-center items-center gap-8 md:gap-14 scrollbar-none">
           {categories.map((cat) => (
             <Link 
               key={cat._id}
               to={`/shop?category=${cat.slug}`}
               className="flex flex-col items-center shrink-0 group text-center"
             >
-              <div className="w-14 h-14 rounded-full overflow-hidden bg-slate-50 border border-slate-100 flex items-center justify-center p-1 group-hover:scale-105 transition-transform duration-200">
+              <div className="w-14 h-14 rounded-full overflow-hidden bg-slate-50 border border-slate-150 flex items-center justify-center p-1 group-hover:scale-105 group-hover:border-slate-300 transition-all duration-[180ms] ease-in-out">
                 <img 
                   src={cat.image || 'https://images.unsplash.com/photo-1539627831859-a911cf04b3cd?auto=format&fit=crop&q=80&w=200'} 
                   alt={cat.name} 
                   className="w-full h-full object-contain"
                 />
               </div>
-              <span className="text-[11px] font-semibold text-[#212121] mt-1.5 group-hover:text-[#2874F0] tracking-wide transition-colors">
+              <span className="text-[11px] font-bold text-[#212121] mt-1.5 group-hover:text-[#2874F0] tracking-wide transition-colors">
                 {cat.name}
               </span>
             </Link>
@@ -99,13 +99,13 @@ export default function Home() {
 
       {/* 2. Hero Promotional Carousel Banner */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 mb-8">
-        <div className="relative bg-white rounded-sm border border-slate-200 shadow-sm overflow-hidden h-[260px] md:h-[340px] group">
+        <div className="relative bg-white rounded-[8px] border border-slate-200 shadow-sm overflow-hidden h-[260px] md:h-[340px] group">
           
           {/* Banner items */}
           <div className="absolute inset-0 flex items-center justify-between">
             {/* Left Column: Text description */}
             <div className="p-6 md:p-12 max-w-lg md:max-w-xl z-10 text-left flex flex-col justify-center h-full">
-              <span className="text-[10px] font-bold text-white bg-[#FB641B] px-2 py-0.5 rounded-sm uppercase tracking-wide w-max mb-3">
+              <span className="text-[10px] font-extrabold text-white bg-[#FB641B] px-2 py-0.5 rounded-[4px] uppercase tracking-wide w-max mb-3">
                 {HERO_SLIDES[currentSlide].badge}
               </span>
               <h1 className="text-xl md:text-[34px] font-bold text-[#212121] leading-tight mb-2 font-sans">
@@ -116,7 +116,7 @@ export default function Home() {
               </p>
               <Link 
                 to={HERO_SLIDES[currentSlide].link} 
-                className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase px-6 py-2.5 rounded-[2px] w-max shadow-sm transition-colors"
+                className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase px-6 py-[12px] rounded-[6px] w-max shadow-sm transition-colors text-center"
               >
                 Shop Now
               </Link>
@@ -136,22 +136,22 @@ export default function Home() {
           {/* Slider Controllers */}
           <button 
             onClick={handlePrevSlide}
-            className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-white/90 hover:bg-white text-slate-700 border border-slate-200 rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity outline-none"
+            className="absolute left-3 top-1/2 -translate-y-1/2 p-2 bg-white/95 hover:bg-white text-slate-700 border border-slate-200 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity outline-none"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-4.5 h-4.5" />
           </button>
           <button 
             onClick={handleNextSlide}
-            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-white/90 hover:bg-white text-slate-700 border border-slate-200 rounded-full shadow opacity-0 group-hover:opacity-100 transition-opacity outline-none"
+            className="absolute right-3 top-1/2 -translate-y-1/2 p-2 bg-white/95 hover:bg-white text-slate-700 border border-slate-200 rounded-full shadow-sm opacity-0 group-hover:opacity-100 transition-opacity outline-none"
           >
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-4.5 h-4.5" />
           </button>
         </div>
       </div>
 
       {/* 3. Core Flipkart Value Trust Badges */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-white border border-slate-200 rounded-sm p-4 flex items-center gap-3.5 shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-[8px] p-4 flex items-center gap-3.5 shadow-sm">
           <Truck className="w-8 h-8 text-[#2874F0] shrink-0" />
           <div>
             <h4 className="font-bold text-[#212121] text-xs uppercase tracking-wide">Free Express Shipping</h4>
@@ -159,7 +159,7 @@ export default function Home() {
           </div>
         </div>
         
-        <div className="bg-white border border-slate-200 rounded-sm p-4 flex items-center gap-3.5 shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-[8px] p-4 flex items-center gap-3.5 shadow-sm">
           <ShieldCheck className="w-8 h-8 text-[#388E3C] shrink-0" />
           <div>
             <h4 className="font-bold text-[#212121] text-xs uppercase tracking-wide">100% Safe Materials</h4>
@@ -167,7 +167,7 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="bg-white border border-slate-200 rounded-sm p-4 flex items-center gap-3.5 shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-[8px] p-4 flex items-center gap-3.5 shadow-sm">
           <RotateCcw className="w-8 h-8 text-[#FB641B] shrink-0" />
           <div>
             <h4 className="font-bold text-[#212121] text-xs uppercase tracking-wide">7 Days Easy Return</h4>
@@ -178,15 +178,15 @@ export default function Home() {
 
       {/* 4. Trending Toys Section (Flipkart grid style) */}
       <section className="max-w-7xl mx-auto px-4 md:px-6 mb-8">
-        <div className="bg-white border border-slate-200 rounded-sm p-4 md:p-6 shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-[8px] p-4 md:p-6 shadow-sm">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-5">
             <div>
-              <h2 className="text-lg md:text-xl font-bold text-[#212121]">Trending Products</h2>
+              <h2 className="text-base md:text-lg font-bold text-[#212121]">Trending Products</h2>
               <p className="text-[11px] text-[#878787] font-normal">Toys bought recently by happy families across India</p>
             </div>
             <Link 
               to="/shop" 
-              className="bg-[#2874F0] text-white hover:bg-[#1a5ebf] text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-sm shadow-sm transition-colors"
+              className="bg-[#2874F0] text-white hover:bg-[#1a5ebf] text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-[6px] shadow-sm transition-colors"
             >
               View All
             </Link>
@@ -204,9 +204,9 @@ export default function Home() {
 
       {/* 5. Featured Brand Spotlight */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 mb-8">
-        <div className="bg-white border border-slate-200 rounded-sm p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-[8px] p-6 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-sm">
           <div className="max-w-xl text-left flex flex-col justify-center">
-            <span className="text-[10px] font-bold text-[#2874F0] bg-slate-150 px-2 py-0.5 rounded-sm uppercase tracking-wide w-max mb-2">
+            <span className="text-[10px] font-bold text-[#2874F0] bg-slate-100 px-2 py-0.5 rounded-sm uppercase tracking-wide w-max mb-2">
               Featured Spotlights
             </span>
             <h2 className="text-xl md:text-2xl font-bold text-[#212121] leading-tight mb-3 font-sans">
@@ -217,13 +217,13 @@ export default function Home() {
             </p>
             <Link 
               to="/shop?category=building-blocks" 
-              className="bg-[#FB641B] hover:bg-[#e15610] text-white font-bold text-xs uppercase px-6 py-2.5 rounded-[2px] w-max shadow-sm"
+              className="bg-[#FB641B] hover:bg-[#e15610] text-white font-bold text-xs uppercase px-6 py-[12px] rounded-[6px] w-max shadow-sm transition-colors"
             >
               Shop Magnetic Kits
             </Link>
           </div>
 
-          <div className="w-full md:w-1/2 aspect-video md:aspect-[16/10] rounded-sm overflow-hidden border border-slate-100 bg-slate-50">
+          <div className="w-full md:w-1/2 aspect-video md:aspect-[16/10] rounded-[8px] overflow-hidden border border-slate-100 bg-slate-50">
             <img 
               src="https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&q=80&w=600" 
               alt="Building spotlight" 
@@ -235,15 +235,15 @@ export default function Home() {
 
       {/* 6. Best Sellers Catalog Compartment */}
       <section className="max-w-7xl mx-auto px-4 md:px-6 mb-8">
-        <div className="bg-white border border-slate-200 rounded-sm p-4 md:p-6 shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-[8px] p-4 md:p-6 shadow-sm">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-5">
             <div>
-              <h2 className="text-lg md:text-xl font-bold text-[#212121]">Best Sellers</h2>
+              <h2 className="text-base md:text-lg font-bold text-[#212121]">Best Sellers</h2>
               <p className="text-[11px] text-[#878787] font-normal">Highly rated and approved by parents and educators</p>
             </div>
             <Link 
               to="/shop" 
-              className="bg-[#2874F0] text-white hover:bg-[#1a5ebf] text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-sm shadow-sm"
+              className="bg-[#2874F0] text-white hover:bg-[#1a5ebf] text-[11px] font-bold uppercase tracking-wider px-4 py-2 rounded-[6px] shadow-sm transition-colors"
             >
               View All
             </Link>
@@ -259,12 +259,12 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 7. Featured Products Grid ( flipkart style grid) */}
+      {/* 7. Featured Products Grid */}
       <section className="max-w-7xl mx-auto px-4 md:px-6 mb-8">
-        <div className="bg-white border border-slate-200 rounded-sm p-4 md:p-6 shadow-sm">
+        <div className="bg-white border border-slate-200 rounded-[8px] p-4 md:p-6 shadow-sm">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-5">
             <div>
-              <h2 className="text-lg md:text-xl font-bold text-[#212121]">Featured Products</h2>
+              <h2 className="text-base md:text-lg font-bold text-[#212121]">Featured Products</h2>
               <p className="text-[11px] text-[#878787] font-normal">Handpicked premium toys curated for cognitive milestones</p>
             </div>
           </div>
@@ -281,7 +281,7 @@ export default function Home() {
 
       {/* 8. Top Brands Strip */}
       <div className="max-w-7xl mx-auto px-4 md:px-6 mb-8 select-none text-slate-800">
-        <div className="bg-white border border-slate-200 rounded-sm p-5 shadow-sm text-center">
+        <div className="bg-white border border-slate-200 rounded-[8px] p-5 shadow-sm text-center">
           <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-4">OUR TRUSTED MANUFACTURER BRANDS</span>
           <div className="flex flex-wrap items-center justify-center gap-8 md:gap-16 font-extrabold text-sm uppercase text-slate-400">
             <span>LEGO</span>
@@ -296,20 +296,20 @@ export default function Home() {
       {/* 9. Parent Testimonials Section */}
       <section className="max-w-7xl mx-auto px-4 md:px-6 mb-12">
         <div className="text-center mb-8">
-          <h2 className="text-lg md:text-xl font-bold text-[#212121]">What Parents Say</h2>
+          <h2 className="text-base md:text-lg font-bold text-[#212121]">What Parents Say</h2>
           <p className="text-[11px] text-[#878787] font-normal">Authentic reviews from families who shopped on ToyBox</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           {MOCK_REVIEWS.map((rev) => (
-            <div key={rev.id} className="bg-white border border-slate-200 rounded-sm p-5 text-left shadow-sm flex flex-col justify-between min-h-[140px]">
+            <div key={rev.id} className="bg-white border border-slate-200 rounded-[8px] p-5 text-left shadow-sm flex flex-col justify-between min-h-[140px] hover:shadow-[0_4px_12px_rgba(0,0,0,0.04)] transition-shadow duration-[180ms] ease-in-out">
               <div>
                 <div className="flex gap-0.5 text-[#FF9F00] mb-2 fill-current">
                   {Array(rev.rating).fill(0).map((_, idx) => (
                     <Star key={idx} className="w-3.5 h-3.5 fill-current" />
                   ))}
                 </div>
-                <p className="text-xs font-normal text-slate-655 leading-relaxed italic">
+                <p className="text-xs font-medium text-slate-600 leading-relaxed italic">
                   "{rev.comment}"
                 </p>
               </div>

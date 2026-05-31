@@ -282,7 +282,7 @@ export const AppProvider = ({ children }) => {
         setUser(res.data);
         localStorage.setItem('user', JSON.stringify(res.data));
         showToast(`Welcome back, ${res.data.name}! 👋`);
-        return { success: true };
+        return res.data;
       } else {
         // Offline Auth Mocking
         const role = email === 'admin@toybox.com' ? 'admin' : 'user';
@@ -307,12 +307,12 @@ export const AppProvider = ({ children }) => {
         setUser(mockUser);
         localStorage.setItem('user', JSON.stringify(mockUser));
         showToast(`Welcome back to Sandbox, ${name}! 👋`);
-        return { success: true };
+        return mockUser;
       }
     } catch (error) {
       const msg = error.response?.data?.message || 'Login failed';
       showToast(msg, 'error');
-      throw new Error(msg);
+      throw error;
     }
   };
 
@@ -320,10 +320,14 @@ export const AppProvider = ({ children }) => {
     try {
       if (!isOfflineMode) {
         const res = await axios.post('/api/auth/register', { name, email, mobile, password });
-        setUser(res.data);
-        localStorage.setItem('user', JSON.stringify(res.data));
-        showToast('Registration successful! Welcome to ToyBox! 🎈');
-        return { success: true };
+        if (res.data.isVerified) {
+          setUser(res.data);
+          localStorage.setItem('user', JSON.stringify(res.data));
+          showToast('Registration successful! Welcome to ToyBox! 🎈');
+        } else {
+          showToast('Verification OTP has been sent to your email address! 📬');
+        }
+        return res.data;
       } else {
         const mockUser = {
           _id: 'u_' + Math.random().toString(36).substring(2, 9),
@@ -332,17 +336,16 @@ export const AppProvider = ({ children }) => {
           mobile,
           role: 'user',
           token: 'mock_jwt_token_for_sandbox',
-          addresses: []
+          addresses: [],
+          isVerified: false
         };
-        setUser(mockUser);
-        localStorage.setItem('user', JSON.stringify(mockUser));
-        showToast('Sandbox Registration successful! Welcome to ToyBox! 🎈');
-        return { success: true };
+        showToast('Sandbox Registration! Please check terminal console for mock verification code. 📬');
+        return mockUser;
       }
     } catch (error) {
       const msg = error.response?.data?.message || 'Registration failed';
       showToast(msg, 'error');
-      throw new Error(msg);
+      throw error;
     }
   };
 
@@ -496,6 +499,67 @@ export const AppProvider = ({ children }) => {
     }
   };
 
+  const verifyOtp = async (email, code) => {
+    try {
+      if (!isOfflineMode) {
+        const res = await axios.post('/api/auth/verify-email', { email, code });
+        setUser(res.data);
+        localStorage.setItem('user', JSON.stringify(res.data));
+        showToast('Email verified successfully! 🎉');
+        return res.data;
+      } else {
+        const mockUser = {
+          _id: 'u_test_verified',
+          name: 'Dhananjay Kumar',
+          email,
+          mobile: '9876543210',
+          role: 'user',
+          token: 'mock_jwt_token_for_sandbox',
+          addresses: [],
+          isVerified: true
+        };
+        setUser(mockUser);
+        localStorage.setItem('user', JSON.stringify(mockUser));
+        showToast('Mock OTP Verification successful! 🎉');
+        return mockUser;
+      }
+    } catch (error) {
+      const msg = error.response?.data?.message || 'OTP verification failed';
+      showToast(msg, 'error');
+      throw error;
+    }
+  };
+
+  const resendOtp = async (email) => {
+    try {
+      if (!isOfflineMode) {
+        await axios.post('/api/auth/resend-verification', { email });
+        showToast('New verification OTP sent to your email! 📬');
+      } else {
+        showToast('Sandbox Mock: Verification OTP code resent! 📬');
+      }
+    } catch (error) {
+      const msg = error.response?.data?.message || 'Failed to resend OTP';
+      showToast(msg, 'error');
+      throw error;
+    }
+  };
+
+  const resetPassword = async (email, token, password) => {
+    try {
+      if (!isOfflineMode) {
+        await axios.post('/api/auth/reset-password', { email, token, password });
+        showToast('Password reset successful! You can now log in.');
+      } else {
+        showToast('Sandbox Mock: Password reset successfully completed!');
+      }
+    } catch (error) {
+      const msg = error.response?.data?.message || 'Password reset failed';
+      showToast(msg, 'error');
+      throw error;
+    }
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -511,6 +575,9 @@ export const AppProvider = ({ children }) => {
         login,
         register,
         logout,
+        verifyOtp,
+        resendOtp,
+        resetPassword,
         addToCart,
         updateCartQty,
         removeFromCart,

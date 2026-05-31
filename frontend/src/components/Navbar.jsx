@@ -77,7 +77,7 @@ export default function Navbar() {
   const wishlistCount = wishlist.length;
 
   return (
-    <header className="sticky top-0 z-50 bg-[#2874F0] text-white shadow-sm">
+    <header className="sticky top-0 z-50 bg-[#2874F0] text-white shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
       
       {/* Top Banner (Flipkart Style info alert) */}
       <div className="bg-[#172337] text-[11px] font-medium py-1.5 px-4 text-center hidden md:block text-slate-300 select-none">
@@ -100,7 +100,7 @@ export default function Navbar() {
 
           {/* Centered Production Search Bar (Amazon/Flipkart layout) */}
           <div ref={suggestionRef} className="flex-1 max-w-2xl relative text-slate-800">
-            <form onSubmit={handleSearchSubmit} className="flex items-center bg-white rounded-sm overflow-hidden shadow-sm border border-transparent focus-within:border-slate-300">
+            <form onSubmit={handleSearchSubmit} className="flex items-center bg-white rounded-[6px] overflow-hidden shadow-sm border border-transparent focus-within:ring-2 focus-within:ring-sky-200 focus-within:border-[#172337] transition-all duration-150">
               <input
                 type="text"
                 placeholder="Search for toys, brands, age groups and more..."
@@ -119,7 +119,7 @@ export default function Navbar() {
 
             {/* Suggestions Panel */}
             {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-md shadow-lg border border-slate-200 overflow-hidden z-50 text-left">
+              <div className="absolute top-full left-0 right-0 mt-1.5 bg-white rounded-[6px] shadow-[0_4px_16px_rgba(0,0,0,0.12)] border border-slate-200 overflow-hidden z-50 text-left">
                 <div className="px-3 py-1.5 text-[9px] text-slate-400 font-bold uppercase border-b border-slate-100 bg-slate-50">
                   Trending Suggestions
                 </div>
@@ -129,7 +129,7 @@ export default function Navbar() {
                     <button
                       key={prod._id}
                       onClick={() => handleSuggestionClick(prod._id)}
-                      className="flex items-center justify-between px-4 py-2 hover:bg-slate-50 text-left w-full border-b border-slate-50"
+                      className="flex items-center justify-between px-4 py-2 hover:bg-slate-50 text-left w-full border-b border-slate-50 transition-colors"
                     >
                       <div className="flex items-center gap-2">
                         <img 
@@ -137,7 +137,7 @@ export default function Navbar() {
                           alt="preview" 
                           className="w-7 h-7 object-contain bg-slate-50 border border-slate-100" 
                         />
-                        <span className="text-[12px] font-medium text-slate-800 line-clamp-1">{prod.name}</span>
+                        <span className="text-[12px] font-medium text-slate-850 line-clamp-1">{prod.name}</span>
                       </div>
                       <span className="text-[12px] font-bold text-slate-900">₹{price}</span>
                     </button>
@@ -148,14 +148,14 @@ export default function Navbar() {
           </div>
 
           {/* Actions & Profiles Row */}
-          <div className="flex items-center gap-5 md:gap-7 text-xs font-semibold select-none">
+          <div className="flex items-center gap-6 md:gap-8 text-xs font-semibold select-none">
             
             {/* Direct Categories Menu Hover Trigger */}
             <div className="relative hidden lg:block">
               <button 
                 onMouseEnter={() => setCategoriesDropdownOpen(true)}
                 onMouseLeave={() => setCategoriesDropdownOpen(false)}
-                className="flex items-center gap-1 py-2 hover:text-slate-100 text-white font-medium"
+                className="flex items-center gap-1 py-2 hover:text-slate-200 text-white font-semibold transition-colors"
               >
                 Categories <ChevronDown className="w-3.5 h-3.5" />
               </button>
@@ -164,13 +164,13 @@ export default function Navbar() {
                 <div 
                   onMouseEnter={() => setCategoriesDropdownOpen(true)}
                   onMouseLeave={() => setCategoriesDropdownOpen(false)}
-                  className="absolute top-full left-0 w-48 bg-white text-slate-800 rounded-md shadow-lg border border-slate-250 py-1 z-50 text-left font-medium"
+                  className="absolute top-full left-0 w-48 bg-white text-slate-800 rounded-[6px] shadow-[0_4px_16px_rgba(0,0,0,0.12)] border border-slate-200 py-1 z-50 text-left font-semibold"
                 >
                   {categories.map((cat) => (
                     <Link
                       key={cat._id}
                       to={`/shop?category=${cat.slug}`}
-                      className="block px-4 py-2 hover:bg-slate-100 text-xs font-medium text-slate-700"
+                      className="block px-4 py-2 hover:bg-slate-50 text-xs font-medium text-slate-700 transition-colors"
                     >
                       {cat.name}
                     </Link>
@@ -180,12 +180,12 @@ export default function Navbar() {
             </div>
 
             {/* Shop All Link */}
-            <Link to="/shop" className="hover:text-slate-100 py-2 hidden sm:block font-medium">Shop All</Link>
+            <Link to="/shop" className="hover:text-slate-200 py-2 hidden sm:block font-semibold transition-colors">Shop All</Link>
 
             {/* Wishlist */}
-            <Link to="/wishlist" className="flex items-center gap-1 hover:text-slate-100 py-2 relative">
+            <Link to="/wishlist" className="flex items-center gap-1 hover:text-slate-200 py-2 relative transition-colors">
               <Heart className="w-4.5 h-4.5" />
-              <span className="hidden md:inline font-medium">Wishlist</span>
+              <span className="hidden md:inline font-semibold">Wishlist</span>
               {wishlistCount > 0 && (
                 <span className="absolute -top-1 -right-2.5 bg-[#FB641B] text-white text-[9px] font-black w-4.5 h-4.5 rounded-full flex items-center justify-center border border-white">
                   {wishlistCount}
@@ -194,7 +194,7 @@ export default function Navbar() {
             </Link>
 
             {/* Cart with numerical summary */}
-            <Link to="/cart" className="flex items-center gap-1.5 hover:text-slate-100 py-2 relative">
+            <Link to="/cart" className="flex items-center gap-1.5 hover:text-slate-200 py-2 relative transition-colors">
               <ShoppingCart className="w-4.5 h-4.5" />
               <span className="font-bold">Cart</span>
               {cartCount > 0 && (
@@ -210,22 +210,22 @@ export default function Navbar() {
                 <>
                   <button 
                     onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                    className="flex items-center gap-1.5 py-2 outline-none font-bold hover:text-slate-100 text-white"
+                    className="flex items-center gap-1.5 py-2 outline-none font-bold hover:text-slate-200 text-white transition-colors"
                   >
                     <User className="w-4.5 h-4.5" />
-                    <span className="hidden md:inline text-xs font-medium">{user.name.split(' ')[0]}</span>
+                    <span className="hidden md:inline text-xs font-semibold">{user.name.split(' ')[0]}</span>
                     <ChevronDown className="w-3.5 h-3.5" />
                   </button>
 
                   {profileDropdownOpen && (
-                    <div className="absolute right-0 mt-1 w-48 bg-white text-slate-800 rounded-md shadow-lg border border-slate-200 py-1 z-50 text-left font-medium">
+                    <div className="absolute right-0 mt-1 w-48 bg-white text-slate-800 rounded-[6px] shadow-[0_4px_16px_rgba(0,0,0,0.12)] border border-slate-200 py-1 z-50 text-left font-semibold">
                       <div className="px-4 py-1.5 text-[10px] text-slate-400 font-bold border-b border-slate-100 uppercase tracking-wider">
                         My Account
                       </div>
                       <Link 
                         to="/dashboard" 
                         onClick={() => setProfileDropdownOpen(false)}
-                        className="block px-4 py-2 hover:bg-slate-50 text-xs text-slate-700"
+                        className="block px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 transition-colors"
                       >
                         My Profile
                       </Link>
@@ -233,7 +233,7 @@ export default function Navbar() {
                         <Link 
                           to="/admin" 
                           onClick={() => setProfileDropdownOpen(false)}
-                          className="block px-4 py-2 hover:bg-slate-50 text-xs text-slate-700"
+                          className="block px-4 py-2 hover:bg-slate-50 text-xs text-slate-700 transition-colors"
                         >
                           Seller Central
                         </Link>
@@ -243,7 +243,7 @@ export default function Navbar() {
                           setProfileDropdownOpen(false);
                           logout();
                         }}
-                        className="block w-full text-left px-4 py-2 hover:bg-rose-50 text-rose-650 text-xs border-t border-slate-100"
+                        className="block w-full text-left px-4 py-2 hover:bg-rose-50 text-rose-650 text-xs border-t border-slate-100 transition-colors"
                       >
                         Sign Out
                       </button>
@@ -253,7 +253,7 @@ export default function Navbar() {
               ) : (
                 <Link 
                   to="/login" 
-                  className="bg-white text-[#2874F0] hover:bg-slate-50 font-bold text-xs px-4 py-1.5 rounded-sm shadow-sm transition-all"
+                  className="bg-white text-[#2874F0] hover:bg-slate-50 font-bold text-xs px-4 py-1.5 rounded-[6px] shadow-sm transition-all"
                 >
                   Login
                 </Link>

@@ -49,6 +49,11 @@ export default function AdminDashboard() {
   const [productSearch, setProductSearch] = useState('');
   const [orderSearch, setOrderSearch] = useState('');
 
+  // Delivery OTP System States
+  const [otpInput, setOtpInput] = useState({});
+  const [activeOtpOrders, setActiveOtpOrders] = useState({});
+  const [simulatedOtps, setSimulatedOtps] = useState({});
+
   // Data Edit Modal States
   const [editingProduct, setEditingProduct] = useState(null);
   const [newProductForm, setNewProductForm] = useState(false);
@@ -245,6 +250,66 @@ export default function AdminDashboard() {
       showToast(`Order status updated successfully!`);
     } catch (err) {
       showToast('Failed to update status', 'error');
+    }
+  };
+
+  const handleSendDeliveryOtp = async (orderId) => {
+    try {
+      showToast('Generating delivery verification OTP...', 'warning');
+      let otp = '';
+      if (!isOfflineMode) {
+        const res = await axios.post(`/api/orders/${orderId}/send-otp`, {}, getAuthHeaders());
+        otp = res.data.deliveryOtp;
+        showToast(res.data.message);
+      } else {
+        otp = Math.floor(100000 + Math.random() * 900000).toString();
+        showToast('Sandbox Mock: Delivery verification OTP sent to user email! 📬');
+      }
+      setActiveOtpOrders(prev => ({ ...prev, [orderId]: true }));
+      setSimulatedOtps(prev => ({ ...prev, [orderId]: otp }));
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Failed to generate delivery OTP', 'error');
+    }
+  };
+
+  const handleVerifyDeliveryOtp = async (orderId) => {
+    const otp = otpInput[orderId];
+    if (!otp || otp.length !== 6) {
+      showToast('Please enter a valid 6-digit OTP code', 'error');
+      return;
+    }
+    try {
+      showToast('Verifying OTP code...');
+      if (!isOfflineMode) {
+        const res = await axios.post(`/api/orders/${orderId}/verify-otp`, { otp }, getAuthHeaders());
+        showToast(res.data.message);
+      } else {
+        showToast('Sandbox Mock: OTP verified successfully!');
+      }
+
+      setOrders(prev => prev.map(o => 
+        o._id === orderId 
+          ? { ...o, orderStatus: 'Delivered', paymentStatus: 'Paid', isDeliveryOtpVerified: true }
+          : o
+      ));
+
+      setActiveOtpOrders(prev => {
+        const next = { ...prev };
+        delete next[orderId];
+        return next;
+      });
+      setOtpInput(prev => {
+        const next = { ...prev };
+        delete next[orderId];
+        return next;
+      });
+      setSimulatedOtps(prev => {
+        const next = { ...prev };
+        delete next[orderId];
+        return next;
+      });
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Invalid or expired delivery OTP', 'error');
     }
   };
 
@@ -860,6 +925,62 @@ export default function AdminDashboard() {
                         </button>
 
                       </div>
+
+                      {/* Delivery Verification OTP Section */}
+                      {ord.orderStatus !== 'Delivered' && ord.orderStatus !== 'Cancelled' && (
+                        <div className="mt-2 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-3">
+                          {!activeOtpOrders[ord._id] ? (
+                            <button
+                              type="button"
+                              onClick={() => handleSendDeliveryOtp(ord._id)}
+                              className="h-8 px-4 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-[10px] uppercase rounded-[4px] shadow-sm transition-colors outline-none"
+                            >
+                              🔑 Send Delivery OTP to Buyer
+                            </button>
+                          ) : (
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="text-[11px] font-bold text-slate-500 uppercase">Verification OTP:</span>
+                              <input
+                                type="text"
+                                maxLength={6}
+                                placeholder="Enter 6-digit OTP..."
+                                value={otpInput[ord._id] || ''}
+                                onChange={(e) => setOtpInput(prev => ({ ...prev, [ord._id]: e.target.value }))}
+                                className="bg-white border border-slate-300 rounded-[4px] px-3 py-1 text-xs w-36 outline-none focus:border-[#2874F0] font-bold text-center tracking-wider"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleVerifyDeliveryOtp(ord._id)}
+                                className="h-8 px-4 bg-[#388E3C] hover:bg-[#2e7d32] text-white font-bold text-[10px] uppercase rounded-[4px] shadow-sm transition-colors outline-none"
+                              >
+                                Verify & Confirm Delivery
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setActiveOtpOrders(prev => {
+                                  const next = { ...prev };
+                                  delete next[ord._id];
+                                  return next;
+                                })}
+                                className="text-[10px] text-slate-400 hover:underline font-bold"
+                              >
+                                Cancel
+                              </button>
+                              {simulatedOtps[ord._id] && (
+                                <span className="text-[10px] font-black text-[#FB641B] bg-orange-50 px-2 py-1 rounded border border-orange-100">
+                                  Sandbox OTP: {simulatedOtps[ord._id]}
+                                </span>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {ord.isDeliveryOtpVerified && (
+                        <div className="text-[10px] font-bold text-[#388E3C] flex items-center gap-1 mt-1">
+                          ✓ Delivery Handover Confirmed with Secure Buyer OTP
+                        </div>
+                      )}
 
                     </div>
                   ))}

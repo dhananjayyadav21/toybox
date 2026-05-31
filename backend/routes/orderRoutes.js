@@ -5,7 +5,9 @@ import {
   getOrderById, 
   updateOrderStatus, 
   getAllOrders,
-  downloadInvoice
+  downloadInvoice,
+  sendDeliveryOtp,
+  confirmDeliveryWithOtp
 } from '../controllers/orderController.js';
 import { protect, admin } from '../middleware/authMiddleware.js';
 
@@ -26,5 +28,8 @@ router.route('/:id/status')
 
 router.route('/:id/invoice')
   .get(protect, downloadInvoice);
+
+router.post('/:id/send-otp', protect, sendDeliveryOtp);
+router.post('/:id/verify-otp', protect, confirmDeliveryWithOtp);
 
 export default router;
