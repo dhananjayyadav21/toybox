@@ -99,6 +99,7 @@ export const verifyEmail = async (req, res) => {
       mobile: user.mobile,
       role: user.role,
       isVerified: user.isVerified,
+      addresses: user.addresses,
       token: generateToken(user._id),
       message: 'Email successfully verified! Logged in.'
     });
@@ -172,6 +173,7 @@ export const loginUser = async (req, res) => {
         mobile: user.mobile,
         role: user.role,
         isVerified: user.isVerified,
+        addresses: user.addresses,
         token: generateToken(user._id)
       });
     } else {

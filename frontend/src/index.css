@@ -18,6 +18,10 @@
     --brand-muted: #6B7280;
   }
 
+  html {
+    overflow-x: hidden;
+  }
+
   body {
     background-color: var(--brand-bg);
     color: var(--brand-text);
@@ -25,6 +29,8 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    width: 100%;
   }
 
   h1, h2, h3 {
@@ -32,6 +38,8 @@
     font-weight: 700;
     color: #1E1B4B;
   }
+
+
 }
 
 @layer components {
@@ -88,6 +96,10 @@
 ::-webkit-scrollbar-thumb { background: #C4B5FD; border-radius: 99px; }
 ::-webkit-scrollbar-thumb:hover { background: #7C3AED; }
 
+/* Hide scrollbar utility */
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+
 /* Smooth fade-in for page loads */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(12px); }
@@ -112,3 +124,17 @@
 .img-zoom { overflow: hidden; }
 .img-zoom img { transition: transform 0.3s ease; }
 .img-zoom:hover img { transform: scale(1.06); }
+
+/* Mobile body lock when menu is open */
+body.mobile-menu-open {
+  overflow: hidden;
+}
+
+/* Mobile drawer slide animation */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.mobile-drawer-enter {
+  animation: slideDown 0.25s ease forwards;
+}

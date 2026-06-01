@@ -2,9 +2,11 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { ShoppingCart, Trash2, ChevronRight } from 'lucide-react';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 export default function Wishlist() {
   const { wishlist, toggleWishlist, addToCart, showToast } = useAppContext();
+  const [itemToDelete, setItemToDelete] = React.useState(null);
 
   const handleMoveToCart = (productId) => {
     addToCart(productId, 1);
@@ -28,7 +30,7 @@ export default function Wishlist() {
         </h1>
 
         {wishlist.length > 0 ? (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {wishlist.map((product) => {
               const displayPrice = product.discountPrice && product.discountPrice > 0 
                 ? product.discountPrice 
@@ -41,12 +43,12 @@ export default function Wishlist() {
               return (
                 <div 
                   key={product._id} 
-                  className="bg-white border border-slate-200 rounded-sm p-3.5 flex flex-col justify-between relative shadow-sm"
+                  className="bg-white border border-slate-200 rounded-lg p-3.5 flex flex-col justify-between relative shadow-sm"
                 >
                   {/* Remove Button */}
                   <button
-                    onClick={() => toggleWishlist(product._id)}
-                    className="absolute top-2.5 right-2.5 z-10 p-1.5 bg-white border border-slate-200 text-slate-400 hover:text-red-500 rounded-sm shadow-sm transition-colors outline-none"
+                    onClick={() => setItemToDelete(product._id)}
+                    className="absolute top-2.5 right-2.5 z-10 p-1.5 bg-white border border-slate-200 text-slate-400 hover:text-red-500 rounded-lg shadow-sm transition-colors outline-none"
                     title="Remove from Wishlist"
                   >
                     <Trash2 className="w-3.5 h-3.5" />
@@ -92,7 +94,7 @@ export default function Wishlist() {
                     <div className="mt-4 pt-3 border-t border-slate-100 select-none">
                       <button
                         onClick={() => handleMoveToCart(product._id)}
-                        className="w-full h-8 bg-[#FF9F00] hover:bg-[#e68e00] text-[#212121] font-bold text-[10px] uppercase rounded-sm flex items-center justify-center gap-1 shadow-sm transition-colors outline-none"
+                        className="w-full h-8 bg-[#FF9F00] hover:bg-[#e68e00] text-[#212121] font-bold text-[10px] uppercase rounded-lg flex items-center justify-center gap-1 shadow-sm transition-colors outline-none"
                       >
                         <ShoppingCart className="w-3.5 h-3.5" /> Move to Cart
                       </button>
@@ -104,7 +106,7 @@ export default function Wishlist() {
             })}
           </div>
         ) : (
-          <div className="bg-white border border-slate-200 rounded-sm p-16 text-center max-w-md mx-auto mt-12 select-none shadow-sm">
+          <div className="bg-white border border-slate-200 rounded-lg p-16 text-center max-w-md mx-auto mt-12 select-none shadow-sm">
             <span className="text-4xl block mb-2">❤️</span>
             <h3 className="font-bold text-slate-800 text-sm uppercase">Your Wishlist is Empty</h3>
             <p className="text-xs text-slate-400 mt-2 leading-relaxed">
@@ -112,7 +114,7 @@ export default function Wishlist() {
             </p>
             <Link 
               to="/shop" 
-              className="mt-6 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase px-8 py-2.5 rounded-sm inline-block shadow-sm"
+              className="mt-6 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase px-8 py-2.5 rounded-lg inline-block shadow-sm"
             >
               Discover Toys Now
             </Link>
@@ -120,6 +122,18 @@ export default function Wishlist() {
         )}
 
       </div>
+
+      <ConfirmationModal
+        isOpen={!!itemToDelete}
+        onClose={() => setItemToDelete(null)}
+        onConfirm={() => {
+          toggleWishlist(itemToDelete);
+          setItemToDelete(null);
+        }}
+        title="Remove from Wishlist?"
+        message="Are you sure you want to remove this item from your wishlist?"
+        confirmText="Yes, Remove"
+      />
     </div>
   );
 }

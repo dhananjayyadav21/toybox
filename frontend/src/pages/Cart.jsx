@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import { Trash2, ShoppingCart, ChevronRight, Tag, ShieldCheck, Gift } from 'lucide-react';
 import axios from 'axios';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 export default function Cart() {
   const { 
@@ -20,6 +21,7 @@ export default function Cart() {
   // Coupon States
   const [couponCode, setCouponCode] = useState('');
   const [activeCoupon, setActiveCoupon] = useState(null);
+  const [itemToDelete, setItemToDelete] = useState(null);
   const [couponLoading, setCouponLoading] = useState(false);
 
   // Totals calculations
@@ -122,7 +124,7 @@ export default function Cart() {
             <div className="lg:col-span-2 flex flex-col gap-4">
               
               {/* Free Shipping Meter */}
-              <div className="bg-white border border-slate-200 rounded-sm p-4 shadow-sm select-none">
+              <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm select-none">
                 <div className="flex items-center justify-between text-xs font-bold text-slate-700 mb-2">
                   <span className="flex items-center gap-1.5">
                     <Gift className="w-4 h-4 text-[#2874F0]" />
@@ -133,7 +135,7 @@ export default function Cart() {
                   </span>
                   <span className="text-[10px] text-slate-450">Min: ₹999</span>
                 </div>
-                <div className="w-full h-1.5 bg-slate-100 rounded-sm overflow-hidden">
+                <div className="w-full h-1.5 bg-slate-100 rounded-lg overflow-hidden">
                   <div 
                     className="h-full bg-[#388E3C] transition-all duration-300"
                     style={{ width: `${progressPercent}%` }}
@@ -142,7 +144,7 @@ export default function Cart() {
               </div>
 
               {/* Main items card list */}
-              <div className="bg-white border border-slate-200 rounded-sm p-4 md:p-6 shadow-sm">
+              <div className="bg-white border border-slate-200 rounded-lg p-4 md:p-6 shadow-sm">
                 <h1 className="text-base font-bold text-[#212121] uppercase border-b border-slate-100 pb-3 mb-4 select-none">
                   Shopping Cart ({cart.length} items)
                 </h1>
@@ -154,13 +156,13 @@ export default function Cart() {
                       : item.product.price;
 
                     return (
-                      <div key={item.product._id} className={`flex items-center justify-between gap-4 py-4 ${idx === 0 ? 'pt-0' : ''}`}>
+                      <div key={item.product._id} className={`flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 py-4 ${idx === 0 ? 'pt-0' : ''}`}>
                         
                         {/* Preview and details */}
                         <div className="flex items-center gap-4 text-left flex-1 min-w-0">
                           
                           {/* Image */}
-                          <div className="w-16 h-16 bg-white border border-slate-200 rounded-sm overflow-hidden shrink-0 flex items-center justify-center p-1 select-none">
+                          <div className="w-16 h-16 bg-white border border-slate-200 rounded-lg overflow-hidden shrink-0 flex items-center justify-center p-1 select-none">
                             <img 
                               src={item.product.images?.[0]} 
                               alt={item.product.name} 
@@ -186,7 +188,7 @@ export default function Cart() {
                         </div>
 
                         {/* Adjust quantities & trash actions */}
-                        <div className="flex items-center gap-4 md:gap-8 shrink-0 select-none">
+                        <div className="flex items-center justify-between sm:justify-end gap-3 sm:gap-4 md:gap-8 shrink-0 select-none">
                           
                           {/* Dropdown selectors */}
                           <div className="flex items-center gap-1">
@@ -194,7 +196,7 @@ export default function Cart() {
                             <select
                               value={item.quantity}
                               onChange={(e) => updateCartQty(item.product._id, Number(e.target.value))}
-                              className="bg-white border border-slate-350 rounded-sm py-0.5 px-2 text-xs font-bold outline-none text-slate-800"
+                              className="bg-white border border-slate-350 rounded-lg py-0.5 px-2 text-xs font-bold outline-none text-slate-800"
                             >
                               {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map(q => (
                                 <option key={q} value={q}>{q}</option>
@@ -211,7 +213,7 @@ export default function Cart() {
 
                           {/* Trash indicator */}
                           <button 
-                            onClick={() => removeFromCart(item.product._id)}
+                            onClick={() => setItemToDelete(item.product._id)}
                             className="p-1 text-slate-400 hover:text-red-500 rounded-full transition-colors outline-none"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -231,7 +233,7 @@ export default function Cart() {
             <div className="lg:col-span-1 flex flex-col gap-4 text-left select-none">
               
               {/* Order pricing summary */}
-              <div className="bg-white border border-slate-200 rounded-sm p-4 shadow-sm sticky top-[120px]">
+              <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm sticky top-[120px]">
                 <h3 className="font-bold text-[#212121] text-xs uppercase tracking-wider border-b border-slate-100 pb-3 mb-3">
                   Price Details
                 </h3>
@@ -264,7 +266,7 @@ export default function Cart() {
                 {/* Checkout CTA */}
                 <button 
                   onClick={handleProceedCheckout}
-                  className="w-full h-11 bg-[#FB641B] hover:bg-[#e15610] text-white font-bold text-xs uppercase rounded-sm shadow-sm flex items-center justify-center gap-1.5 transition-colors outline-none"
+                  className="w-full h-11 bg-[#FB641B] hover:bg-[#e15610] text-white font-bold text-xs uppercase rounded-lg shadow-sm flex items-center justify-center gap-1.5 transition-colors outline-none"
                 >
                   Proceed to Buy
                 </button>
@@ -277,10 +279,10 @@ export default function Cart() {
               </div>
 
               {/* Coupons card */}
-              <div className="bg-white border border-slate-200 rounded-sm p-4 shadow-sm">
+              <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
                 <h4 className="font-bold text-[#212121] text-xs uppercase mb-3">Apply Coupon</h4>
                 {activeCoupon ? (
-                  <div className="flex items-center justify-between bg-emerald-50 border border-emerald-100 p-2.5 rounded-sm">
+                  <div className="flex items-center justify-between bg-emerald-50 border border-emerald-100 p-2.5 rounded-lg">
                     <span className="text-emerald-800 text-[10px] font-bold uppercase flex items-center gap-1">
                       <Tag className="w-3.5 h-3.5 text-[#388E3C]" /> {activeCoupon.code} APPLIED
                     </span>
@@ -309,7 +311,7 @@ export default function Cart() {
                     </button>
                   </form>
                 )}
-                <div className="text-[10px] text-slate-450 mt-3 flex flex-col gap-1.5 bg-slate-50 border border-slate-100 p-2.5 rounded-sm">
+                <div className="text-[10px] text-slate-450 mt-3 flex flex-col gap-1.5 bg-slate-50 border border-slate-100 p-2.5 rounded-lg">
                   <span className="font-bold text-slate-500">🎫 Sandbox Vouchers:</span>
                   <span>• <b>TOYBOX20</b> (20% Off percentage savings)</span>
                   <span>• <b>FLAT500</b> (Flat ₹500 fixed savings)</span>
@@ -320,7 +322,7 @@ export default function Cart() {
 
           </div>
         ) : (
-          <div className="bg-white border border-slate-200 rounded-sm p-16 text-center max-w-md mx-auto mt-12 select-none shadow-sm">
+          <div className="bg-white border border-slate-200 rounded-lg p-16 text-center max-w-md mx-auto mt-12 select-none shadow-sm">
             <span className="text-4xl block mb-2">🛒</span>
             <h3 className="font-bold text-slate-800 text-sm uppercase">Your Shopping Cart is Empty</h3>
             <p className="text-xs text-slate-400 mt-2 leading-relaxed">
@@ -328,7 +330,7 @@ export default function Cart() {
             </p>
             <Link 
               to="/shop" 
-              className="mt-6 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase px-8 py-2.5 rounded-sm inline-block shadow-sm"
+              className="mt-6 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase px-8 py-2.5 rounded-lg inline-block shadow-sm"
             >
               Shop All Toys
             </Link>
@@ -336,6 +338,17 @@ export default function Cart() {
         )}
 
       </div>
+      <ConfirmationModal
+        isOpen={!!itemToDelete}
+        onClose={() => setItemToDelete(null)}
+        onConfirm={() => {
+          removeFromCart(itemToDelete);
+          setItemToDelete(null);
+        }}
+        title="Remove Item?"
+        message="Are you sure you want to remove this item from your cart?"
+        confirmText="Yes, Remove"
+      />
     </div>
   );
 }

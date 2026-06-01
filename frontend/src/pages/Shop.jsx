@@ -269,13 +269,23 @@ export default function Shop() {
           <div className="flex-1">
             
             {/* Top Sort Header Block (Flipkart Style) */}
-            <div className="bg-white border border-slate-200 rounded-sm p-3.5 flex flex-wrap items-center justify-between gap-4 mb-4 select-none">
+            <div className="bg-white border border-slate-200 rounded-lg p-3 sm:p-3.5 flex flex-wrap items-center justify-between gap-2 sm:gap-4 mb-4 select-none shadow-sm">
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-bold text-[#212121]">Browse Products</h2>
-                <span className="text-xs font-normal text-slate-400">({filteredProducts.length} items found)</span>
+                <h2 className="text-xs sm:text-sm font-bold text-[#212121]">Browse Products</h2>
+                <span className="text-[10px] sm:text-xs font-normal text-slate-400">({filteredProducts.length} items)</span>
               </div>
 
-              <div className="flex items-center gap-4 text-xs font-semibold">
+              <div className="flex items-center gap-2 sm:gap-4 text-xs font-semibold">
+                {/* Mobile filter toggle */}
+                <button 
+                  onClick={() => setMobileFiltersOpen(!mobileFiltersOpen)}
+                  className="lg:hidden flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] rounded-sm transition-colors"
+                >
+                  <Filter className="w-3.5 h-3.5" /> Filters
+                  {activeFiltersCount > 0 && (
+                    <span className="bg-[#2874F0] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center">{activeFiltersCount}</span>
+                  )}
+                </button>
                 {/* Search query tag */}
                 {searchQuery.trim() && (
                   <div className="bg-slate-100 text-slate-700 px-2.5 py-1 rounded-sm flex items-center gap-1 font-normal">
@@ -301,6 +311,65 @@ export default function Shop() {
                 </div>
               </div>
             </div>
+
+            {/* Mobile Filter Panel */}
+            {mobileFiltersOpen && (
+              <div className="lg:hidden bg-white border border-slate-200 rounded-lg p-4 mb-4 shadow-sm mobile-drawer-enter">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-bold text-[#212121] text-xs uppercase">Filters</h3>
+                  <div className="flex items-center gap-3">
+                    {activeFiltersCount > 0 && (
+                      <button onClick={clearAllFilters} className="text-[11px] font-bold text-[#2874F0] hover:underline">CLEAR ALL</button>
+                    )}
+                    <button onClick={() => setMobileFiltersOpen(false)} className="p-1 text-slate-400 hover:text-slate-600"><X className="w-4 h-4" /></button>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Category */}
+                  <div>
+                    <h4 className="font-bold text-[#212121] text-[11px] uppercase mb-2">Categories</h4>
+                    <div className="flex flex-wrap gap-1.5">
+                      <button onClick={() => handleCategorySelect('all')} className={`px-2.5 py-1 text-[11px] font-semibold rounded-sm border ${selectedCategory === 'all' ? 'bg-[#2874F0] text-white border-[#2874F0]' : 'bg-white text-slate-600 border-slate-200'}`}>All</button>
+                      {categories.map((cat) => (
+                        <button key={cat._id} onClick={() => handleCategorySelect(cat.slug)} className={`px-2.5 py-1 text-[11px] font-semibold rounded-sm border ${selectedCategory === cat.slug ? 'bg-[#2874F0] text-white border-[#2874F0]' : 'bg-white text-slate-600 border-slate-200'}`}>{cat.name}</button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Age */}
+                  <div>
+                    <h4 className="font-bold text-[#212121] text-[11px] uppercase mb-2">Age Groups</h4>
+                    <div className="flex flex-wrap gap-1.5">
+                      <button onClick={() => setSelectedAge('all')} className={`px-2.5 py-1 text-[11px] font-semibold rounded-sm border ${selectedAge === 'all' ? 'bg-[#2874F0] text-white border-[#2874F0]' : 'bg-white text-slate-600 border-slate-200'}`}>All</button>
+                      {AGE_GROUPS.map((age) => (
+                        <button key={age} onClick={() => setSelectedAge(age)} className={`px-2.5 py-1 text-[11px] font-semibold rounded-sm border ${selectedAge === age ? 'bg-[#2874F0] text-white border-[#2874F0]' : 'bg-white text-slate-600 border-slate-200'}`}>{age}</button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Price */}
+                  <div>
+                    <h4 className="font-bold text-[#212121] text-[11px] uppercase mb-2">Price: Up to ₹{priceRange}</h4>
+                    <input type="range" min="500" max="5000" step="100" value={priceRange} onChange={(e) => setPriceRange(Number(e.target.value))} className="w-full h-1.5 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-[#2874F0]" />
+                  </div>
+
+                  {/* Rating */}
+                  <div>
+                    <h4 className="font-bold text-[#212121] text-[11px] uppercase mb-2">Min Rating</h4>
+                    <div className="flex gap-2">
+                      {[4, 3, 2].map((stars) => (
+                        <button key={stars} onClick={() => setMinRating(stars)} className={`flex items-center gap-1 px-2 py-1 text-[11px] font-bold rounded-sm border ${minRating === stars ? 'bg-[#388E3C] text-white border-[#388E3C]' : 'bg-white text-slate-600 border-slate-200'}`}>
+                          {stars}+ <Star className="w-3 h-3 fill-current" />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <button onClick={() => setMobileFiltersOpen(false)} className="w-full mt-4 h-9 bg-[#2874F0] text-white font-bold text-xs uppercase rounded-sm">Apply Filters</button>
+              </div>
+            )}
 
             {/* Active Filter Pills Bar */}
             {activeFiltersCount > 0 && (
@@ -345,7 +414,7 @@ export default function Shop() {
               </div>
             ) : paginatedProducts.length > 0 ? (
               <>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
                   {paginatedProducts.map((prod) => (
                     <ProductCard key={prod._id} product={prod} />
                   ))}

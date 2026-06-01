@@ -17,7 +17,7 @@ export default function ProductCard({ product }) {
     : product.price;
 
   return (
-    <div className="bg-white rounded-2xl border border-violet-100 hover:border-violet-200 hover:shadow-lg hover:shadow-violet-50 transition-all duration-200 flex flex-col h-full relative overflow-hidden group select-none" style={{ transform: 'translateY(0)', transition: 'all 0.2s ease' }}
+    <div className="bg-white rounded-xl border border-violet-100 hover:border-violet-200 hover:shadow-lg hover:shadow-violet-50 transition-all duration-200 flex flex-col h-full relative overflow-hidden group select-none" style={{ transform: 'translateY(0)', transition: 'all 0.2s ease' }}
       onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-3px)'}
       onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}
     >
@@ -44,7 +44,7 @@ export default function ProductCard({ product }) {
       </button>
 
       {/* Product image */}
-      <Link to={`/product/${product._id}`} className="block relative overflow-hidden bg-gradient-to-br from-violet-50 to-slate-50 rounded-t-2xl">
+      <Link to={`/product/${product._id}`} className="block relative overflow-hidden bg-gradient-to-br from-violet-50 to-slate-50 rounded-t-xl">
         <div className="aspect-square flex items-center justify-center p-4">
           <img
             src={product.images?.[0] || 'https://images.unsplash.com/photo-1539627831859-a911cf04b3cd?auto=format&fit=crop&q=80&w=400'}
@@ -56,7 +56,7 @@ export default function ProductCard({ product }) {
       </Link>
 
       {/* Info block */}
-      <div className="flex flex-col flex-1 p-3 gap-2">
+      <div className="flex flex-col flex-1 p-2 sm:p-3 gap-1.5 sm:gap-2">
 
         {/* Brand + age */}
         <div className="flex items-center gap-1.5 flex-wrap">
@@ -72,7 +72,7 @@ export default function ProductCard({ product }) {
 
         {/* Title */}
         <Link to={`/product/${product._id}`}>
-          <h3 className="text-sm font-semibold text-gray-800 hover:text-violet-700 line-clamp-2 leading-snug transition-colors">
+          <h3 className="text-xs sm:text-sm font-semibold text-gray-800 hover:text-violet-700 line-clamp-2 leading-snug transition-colors">
             {product.name}
           </h3>
         </Link>
@@ -94,7 +94,7 @@ export default function ProductCard({ product }) {
         {/* Price + CTA */}
         <div className="border-t border-violet-50 pt-2.5 flex flex-col gap-2">
           <div className="flex items-baseline gap-1.5 flex-wrap">
-            <span className="text-base font-bold text-gray-900">₹{displayPrice}</span>
+            <span className="text-sm sm:text-base font-bold text-gray-900">₹{displayPrice}</span>
             {discountPercent > 0 && (
               <>
                 <span className="text-xs text-gray-400 line-through">₹{product.price}</span>
@@ -106,7 +106,7 @@ export default function ProductCard({ product }) {
           {product.stock > 0 ? (
             <button
               onClick={() => addToCart(product._id)}
-              className="w-full h-9 bg-violet-700 hover:bg-violet-800 text-white font-semibold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-95 shadow-sm shadow-violet-200"
+              className="w-full h-8 sm:h-9 bg-violet-700 hover:bg-violet-800 text-white font-semibold text-[10px] sm:text-xs rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all active:scale-95 shadow-sm shadow-violet-200"
             >
               <ShoppingCart className="w-3.5 h-3.5" /> Add to Cart
             </button>

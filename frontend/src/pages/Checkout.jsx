@@ -310,7 +310,7 @@ export default function Checkout() {
             Your toy delivery request has been registered in the system. Check details below or track it in your Dashboard.
           </p>
 
-          <div className="w-full bg-white border border-slate-200 rounded-sm p-5 text-left text-xs font-semibold text-slate-600 flex flex-col gap-3">
+          <div className="w-full bg-white border border-slate-200 rounded-lg p-5 text-left text-xs font-semibold text-slate-600 flex flex-col gap-3">
             <div className="flex justify-between pb-2 border-b border-slate-100">
               <span>Order Reference ID</span>
               <span className="font-bold text-[#212121]">#{placedOrderDetails._id.toString().toUpperCase()}</span>
@@ -338,13 +338,13 @@ export default function Checkout() {
           <div className="flex gap-3 w-full mt-4">
             <button 
               onClick={() => navigate('/dashboard')}
-              className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase h-11 rounded-sm flex-1 shadow-sm transition-colors"
+              className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase h-11 rounded-lg flex-1 shadow-sm transition-colors"
             >
               Go to Account
             </button>
             <button 
               onClick={() => navigate('/shop')}
-              className="bg-white border border-slate-300 text-slate-800 font-bold text-xs uppercase h-11 rounded-sm flex-1 shadow-sm hover:bg-slate-50 transition-colors"
+              className="bg-white border border-slate-300 text-slate-800 font-bold text-xs uppercase h-11 rounded-lg flex-1 shadow-sm hover:bg-slate-50 transition-colors"
             >
               Continue Shopping
             </button>
@@ -366,7 +366,7 @@ export default function Checkout() {
         </div>
 
         {/* Stepper indicators */}
-        <div className="grid grid-cols-3 gap-2 mb-6 bg-white border border-slate-200 rounded-sm p-3 text-center text-xs font-bold text-slate-400 select-none shadow-sm">
+        <div className="grid grid-cols-3 gap-2 mb-6 bg-white border border-slate-200 rounded-lg p-3 text-center text-xs font-bold text-slate-400 select-none shadow-sm">
           <div className="text-[#2874F0]">1. Shipping Address</div>
           <div className="text-[#2874F0]">2. Secure Settlement</div>
           <div className="text-slate-700">3. Review Order</div>
@@ -378,7 +378,7 @@ export default function Checkout() {
           <div className="lg:col-span-2 flex flex-col gap-4">
             
             {/* 1. SHIPPING ADDRESS */}
-            <div className="bg-white border border-slate-200 rounded-sm p-4 md:p-6 shadow-sm">
+            <div className="bg-white border border-slate-200 rounded-lg p-4 md:p-6 shadow-sm">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4 select-none">
                 <h3 className="font-bold text-[#212121] text-xs uppercase tracking-wider flex items-center gap-1.5">
                   <MapPin className="w-4 h-4 text-[#FB641B]" /> 1. Shipping Address
@@ -466,7 +466,7 @@ export default function Checkout() {
                   {user.addresses.map((addr, idx) => (
                     <label 
                       key={addr._id || idx} 
-                      className={`flex items-start gap-3 p-3 border rounded-sm cursor-pointer ${
+                      className={`flex items-start gap-3 p-3 border rounded-lg cursor-pointer ${
                         selectedAddressIdx === idx ? 'border-[#2874F0] bg-blue-50/10' : 'border-slate-200 bg-white'
                       }`}
                     >
@@ -490,7 +490,7 @@ export default function Checkout() {
                   <span>No shipping address saved on this account.</span>
                   <button 
                     onClick={() => setIsAddingNewAddress(true)}
-                    className="mt-2 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs px-4 py-2 rounded-sm"
+                    className="mt-2 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs px-4 py-2 rounded-lg"
                   >
                     Add Shipping Address
                   </button>
@@ -499,7 +499,7 @@ export default function Checkout() {
             </div>
 
             {/* 2. SECURE PAYMENT */}
-            <div className="bg-white border border-slate-200 rounded-sm p-4 md:p-6 shadow-sm">
+            <div className="bg-white border border-slate-200 rounded-lg p-4 md:p-6 shadow-sm">
               <h3 className="font-bold text-[#212121] text-xs uppercase tracking-wider border-b border-slate-100 pb-3 mb-4 flex items-center gap-1.5 select-none">
                 <CreditCard className="w-4 h-4 text-[#2874F0]" /> 2. Secure Settlement Options
               </h3>
@@ -508,7 +508,7 @@ export default function Checkout() {
                 
                 {/* COD Option */}
                 <label 
-                  className={`flex-1 flex items-start gap-3 p-4 border rounded-sm cursor-pointer ${
+                  className={`flex-1 flex items-start gap-3 p-4 border rounded-lg cursor-pointer ${
                     paymentMethod === 'COD' ? 'border-[#2874F0] bg-blue-50/10' : 'border-slate-200 bg-white'
                   }`}
                 >
@@ -527,7 +527,7 @@ export default function Checkout() {
 
                 {/* Razorpay Option */}
                 <label 
-                  className={`flex-1 flex items-start gap-3 p-4 border rounded-sm cursor-pointer ${
+                  className={`flex-1 flex items-start gap-3 p-4 border rounded-lg cursor-pointer ${
                     paymentMethod === 'Razorpay' ? 'border-[#2874F0] bg-blue-50/10' : 'border-slate-200 bg-white'
                   }`}
                 >
@@ -555,7 +555,7 @@ export default function Checkout() {
           <div className="lg:col-span-1 flex flex-col gap-4 text-left select-none">
             
             {/* Basket items display */}
-            <div className="bg-white border border-slate-200 rounded-sm p-4 shadow-sm">
+            <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
               <h3 className="font-bold text-[#212121] text-xs uppercase tracking-wider border-b border-slate-100 pb-3 mb-3">
                 Order Items ({cart.length})
               </h3>
@@ -570,7 +570,7 @@ export default function Checkout() {
                       <img
                         src={item.product.images?.[0]}
                         alt={item.product.name}
-                        className="w-10 h-10 border border-slate-200 p-0.5 rounded-sm object-contain bg-white shrink-0"
+                        className="w-10 h-10 border border-slate-200 p-0.5 rounded-lg object-contain bg-white shrink-0"
                       />
                       <div className="flex-1 min-w-0">
                         <span className="text-[11px] font-medium text-[#212121] block truncate">{item.product.name}</span>
@@ -612,7 +612,7 @@ export default function Checkout() {
               <button
                 onClick={handlePlaceOrder}
                 disabled={checkoutLoading}
-                className="w-full h-11 bg-[#FB641B] hover:bg-[#e15610] text-white font-bold text-xs uppercase rounded-sm shadow-sm flex items-center justify-center gap-1.5 mt-4 transition-colors outline-none"
+                className="w-full h-11 bg-[#FB641B] hover:bg-[#e15610] text-white font-bold text-xs uppercase rounded-lg shadow-sm flex items-center justify-center gap-1.5 mt-4 transition-colors outline-none"
               >
                 {checkoutLoading ? 'Placing Order...' : 'Confirm & Place Order'}
               </button>
@@ -723,7 +723,7 @@ export default function Checkout() {
                   {activePaymentTab === 'net' && (
                     <div className="grid grid-cols-2 gap-2 font-bold text-slate-600">
                       {['SBI', 'HDFC', 'ICICI', 'Axis'].map(bank => (
-                        <div key={bank} className="border border-slate-200 rounded-sm p-2 bg-slate-50 text-center text-xs hover:border-[#3399FF] cursor-pointer">
+                        <div key={bank} className="border border-slate-200 rounded-lg p-2 bg-slate-50 text-center text-xs hover:border-[#3399FF] cursor-pointer">
                           🏦 {bank} Bank
                         </div>
                       ))}
@@ -736,7 +736,7 @@ export default function Checkout() {
                 <div className="p-4 bg-slate-50 border-t border-slate-200 flex gap-3">
                   <button
                     onClick={handleSimulatedPaymentSuccess}
-                    className="flex-1 bg-[#3399FF] hover:bg-[#287ece] text-white font-bold text-xs uppercase py-3 rounded-sm flex items-center justify-center gap-1.5 shadow-sm outline-none"
+                    className="flex-1 bg-[#3399FF] hover:bg-[#287ece] text-white font-bold text-xs uppercase py-3 rounded-lg flex items-center justify-center gap-1.5 shadow-sm outline-none"
                   >
                     <Lock className="w-3.5 h-3.5 fill-current" /> Pay Securely
                   </button>
@@ -745,7 +745,7 @@ export default function Checkout() {
                       setShowSimulatorModal(false);
                       showToast('Simulated Razorpay transaction was aborted.', 'error');
                     }}
-                    className="px-4 py-3 bg-white border border-slate-300 hover:bg-slate-100 text-slate-550 font-bold text-xs uppercase rounded-sm outline-none"
+                    className="px-4 py-3 bg-white border border-slate-300 hover:bg-slate-100 text-slate-550 font-bold text-xs uppercase rounded-lg outline-none"
                   >
                     Abort
                   </button>

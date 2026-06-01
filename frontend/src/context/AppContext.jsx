@@ -210,7 +210,7 @@ export const AppProvider = ({ children }) => {
     setToasts((prev) => [...prev, { id, message, type }]);
     setTimeout(() => {
       setToasts((prev) => prev.filter((t) => t.id !== id));
-    }, 4000);
+    }, 2500);
   };
 
   // Fetch Catalog
@@ -417,7 +417,7 @@ export const AppProvider = ({ children }) => {
           }
         });
       }
-      showToast('Added to Cart! 🛒');
+
     } catch (error) {
       showToast('Failed to add item to cart', 'error');
     }
@@ -435,7 +435,7 @@ export const AppProvider = ({ children }) => {
           ).filter(item => item.quantity > 0)
         );
       }
-      showToast('Cart updated!');
+
     } catch (error) {
       showToast('Failed to update quantity', 'error');
     }
@@ -449,7 +449,7 @@ export const AppProvider = ({ children }) => {
       } else {
         setCart(prev => prev.filter(item => item.product._id !== productId));
       }
-      showToast('Removed from Cart! 🗑️');
+
     } catch (error) {
       showToast('Failed to remove item', 'error');
     }
@@ -469,20 +469,20 @@ export const AppProvider = ({ children }) => {
         if (isInWishlist) {
           const res = await axios.delete(`/api/wishlist/remove/${productId}`, getAuthHeaders());
           setWishlist(res.data);
-          showToast('Removed from Wishlist! 🤍');
+
         } else {
           const res = await axios.post('/api/wishlist/add', { productId }, getAuthHeaders());
           setWishlist(res.data);
-          showToast('Added to Wishlist! ❤️');
+
         }
       } else {
         const product = products.find(p => p._id === productId);
         if (isInWishlist) {
           setWishlist(prev => prev.filter(item => item._id !== productId));
-          showToast('Removed from Wishlist! 🤍');
+
         } else {
           setWishlist(prev => [...prev, product]);
-          showToast('Added to Wishlist! ❤️');
+
         }
       }
     } catch (error) {
@@ -496,7 +496,7 @@ export const AppProvider = ({ children }) => {
         const res = await axios.post('/api/auth/address', addr, getAuthHeaders());
         setUser(prev => {
           const updated = { ...prev, addresses: res.data };
-          localStorage.setItem('user', JSON.stringify(updated));
+          localStorage.setItem('toybox_user', JSON.stringify(updated));
           return updated;
         });
       } else {
@@ -507,7 +507,7 @@ export const AppProvider = ({ children }) => {
           return updated;
         });
       }
-      showToast('Address added successfully! 🏠');
+
     } catch (error) {
       showToast('Failed to add address', 'error');
     }
@@ -519,17 +519,17 @@ export const AppProvider = ({ children }) => {
         const res = await axios.delete(`/api/auth/address/${id}`, getAuthHeaders());
         setUser(prev => {
           const updated = { ...prev, addresses: res.data };
-          localStorage.setItem('user', JSON.stringify(updated));
+          localStorage.setItem('toybox_user', JSON.stringify(updated));
           return updated;
         });
       } else {
         setUser(prev => {
           const updated = { ...prev, addresses: prev.addresses.filter(a => a._id !== id) };
-          localStorage.setItem('user', JSON.stringify(updated));
+          localStorage.setItem('toybox_user', JSON.stringify(updated));
           return updated;
         });
       }
-      showToast('Address removed! 🏠');
+
     } catch (error) {
       showToast('Failed to remove address', 'error');
     }
@@ -540,7 +540,7 @@ export const AppProvider = ({ children }) => {
       if (!isOfflineMode) {
         const res = await axios.post('/api/auth/verify-email', { email, code });
         setUser(res.data);
-        localStorage.setItem('user', JSON.stringify(res.data));
+        localStorage.setItem('toybox_user', JSON.stringify(res.data));
         showToast('Email verified successfully! 🎉');
         return res.data;
       } else {
@@ -555,7 +555,7 @@ export const AppProvider = ({ children }) => {
           isVerified: true
         };
         setUser(mockUser);
-        localStorage.setItem('user', JSON.stringify(mockUser));
+        localStorage.setItem('toybox_user', JSON.stringify(mockUser));
         showToast('Mock OTP Verification successful! 🎉');
         return mockUser;
       }

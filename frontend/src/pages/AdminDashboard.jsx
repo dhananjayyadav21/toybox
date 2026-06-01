@@ -14,6 +14,7 @@ import {
   FileText,
   Search
 } from 'lucide-react';
+import ConfirmationModal from '../components/ConfirmationModal';
 
 export default function AdminDashboard() {
   const { 
@@ -71,6 +72,9 @@ export default function AdminDashboard() {
   const [couponFormData, setCouponFormData] = useState({
     code: '', discountType: 'percentage', discountValue: '', expiryDate: '', usageLimit: ''
   });
+
+  const [productToDelete, setProductToDelete] = useState(null);
+  const [couponToDelete, setCouponToDelete] = useState(null);
 
   // Fetch admin logs
   const fetchAdminData = async () => {
@@ -164,7 +168,6 @@ export default function AdminDashboard() {
   };
 
   const deleteProductItem = async (id) => {
-    if (!window.confirm('Delete this product permanently?')) return;
     try {
       if (!isOfflineMode) {
         await axios.delete(`/api/products/${id}`, getAuthHeaders());
@@ -224,7 +227,6 @@ export default function AdminDashboard() {
   };
 
   const deleteCouponItem = async (id) => {
-    if (!window.confirm('Delete coupon?')) return;
     try {
       if (!isOfflineMode) {
         await axios.delete(`/api/coupons/${id}`, getAuthHeaders());
@@ -380,7 +382,7 @@ export default function AdminDashboard() {
           </div>
         </div>
         <div className="text-right">
-          <span className="text-[10px] bg-[#388E3C] text-white px-2 py-0.5 rounded-sm font-bold uppercase select-none">
+          <span className="text-[10px] bg-[#388E3C] text-white px-2 py-0.5 rounded-lg font-bold uppercase select-none">
             Admin Mode
           </span>
         </div>
@@ -390,10 +392,10 @@ export default function AdminDashboard() {
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
           
           {/* LEFT SIDEBAR: Professional Dark blue/slate Sidebar */}
-          <aside className="lg:col-span-1 bg-[#172337] text-white border border-[#2a3a54] rounded-sm p-4 shadow-sm flex flex-col gap-1 select-none font-medium">
+          <aside className="lg:col-span-1 bg-[#172337] text-white border border-[#2a3a54] rounded-lg p-4 shadow-sm flex flex-col gap-1 select-none font-medium">
             <button
               onClick={() => setAdminTab('overview')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-sm text-left text-xs uppercase transition-colors ${
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left text-xs uppercase transition-colors ${
                 adminTab === 'overview' ? 'bg-[#2874F0] text-white font-bold' : 'hover:bg-[#202e43] text-slate-300'
               }`}
             >
@@ -402,7 +404,7 @@ export default function AdminDashboard() {
             
             <button
               onClick={() => setAdminTab('products')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-sm text-left text-xs uppercase transition-colors ${
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left text-xs uppercase transition-colors ${
                 adminTab === 'products' ? 'bg-[#2874F0] text-white font-bold' : 'hover:bg-[#202e43] text-slate-300'
               }`}
             >
@@ -411,7 +413,7 @@ export default function AdminDashboard() {
 
             <button
               onClick={() => setAdminTab('categories')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-sm text-left text-xs uppercase transition-colors ${
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left text-xs uppercase transition-colors ${
                 adminTab === 'categories' ? 'bg-[#2874F0] text-white font-bold' : 'hover:bg-[#202e43] text-slate-300'
               }`}
             >
@@ -420,7 +422,7 @@ export default function AdminDashboard() {
 
             <button
               onClick={() => setAdminTab('orders')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-sm text-left text-xs uppercase transition-colors ${
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left text-xs uppercase transition-colors ${
                 adminTab === 'orders' ? 'bg-[#2874F0] text-white font-bold' : 'hover:bg-[#202e43] text-slate-300'
               }`}
             >
@@ -429,7 +431,7 @@ export default function AdminDashboard() {
 
             <button
               onClick={() => setAdminTab('coupons')}
-              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-sm text-left text-xs uppercase transition-colors ${
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left text-xs uppercase transition-colors ${
                 adminTab === 'coupons' ? 'bg-[#2874F0] text-white font-bold' : 'hover:bg-[#202e43] text-slate-300'
               }`}
             >
@@ -446,19 +448,19 @@ export default function AdminDashboard() {
                 
                 {/* Metrics Cards Grid */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 select-none">
-                  <div className="bg-white border border-slate-200 rounded-sm p-4 shadow-sm">
+                  <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
                     <span className="text-[10px] text-slate-400 font-bold uppercase block mb-1">Store Revenue</span>
                     <span className="text-lg font-bold text-[#212121]">₹{stats.sales}</span>
                   </div>
-                  <div className="bg-white border border-slate-200 rounded-sm p-4 shadow-sm">
+                  <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
                     <span className="text-[10px] text-slate-400 font-bold uppercase block mb-1">Total Sales</span>
                     <span className="text-lg font-bold text-[#212121]">{stats.ordersCount} orders</span>
                   </div>
-                  <div className="bg-white border border-slate-200 rounded-sm p-4 shadow-sm">
+                  <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
                     <span className="text-[10px] text-slate-400 font-bold uppercase block mb-1">Toys Cataloged</span>
                     <span className="text-lg font-bold text-[#212121]">{stats.productsCount} items</span>
                   </div>
-                  <div className="bg-white border border-slate-200 rounded-sm p-4 shadow-sm">
+                  <div className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm">
                     <span className="text-[10px] text-slate-400 font-bold uppercase block mb-1">Pending Dispatches</span>
                     <span className="text-lg font-bold text-[#FB641B]">{stats.pendingOrders} jobs</span>
                   </div>
@@ -468,13 +470,13 @@ export default function AdminDashboard() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   
                   {/* Sales trendline */}
-                  <div className="bg-white border border-slate-200 rounded-sm p-4 md:p-6 shadow-sm">
+                  <div className="bg-white border border-slate-200 rounded-lg p-4 md:p-6 shadow-sm">
                     <div className="border-b border-slate-100 pb-3 mb-4 select-none flex justify-between items-center text-xs font-bold">
                       <span className="text-[#212121] uppercase">Sales Timelines</span>
                       <span className="text-slate-400">Interactive Line Graph</span>
                     </div>
 
-                    <div className="aspect-[16/9] w-full bg-slate-50 border border-slate-150 rounded-sm p-3 flex items-center justify-center">
+                    <div className="aspect-[16/9] w-full bg-slate-50 border border-slate-150 rounded-lg p-3 flex items-center justify-center">
                       <svg viewBox="0 0 100 50" className="w-full h-full text-[#2874F0] overflow-visible">
                         <line x1="0" y1="10" x2="100" y2="10" stroke="#E2E8F0" strokeWidth="0.5" strokeDasharray="2" />
                         <line x1="0" y1="25" x2="100" y2="25" stroke="#E2E8F0" strokeWidth="0.5" strokeDasharray="2" />
@@ -493,13 +495,13 @@ export default function AdminDashboard() {
                   </div>
 
                   {/* Proportions Donut Chart */}
-                  <div className="bg-white border border-slate-200 rounded-sm p-4 md:p-6 shadow-sm">
+                  <div className="bg-white border border-slate-200 rounded-lg p-4 md:p-6 shadow-sm">
                     <div className="border-b border-slate-100 pb-3 mb-4 select-none flex justify-between items-center text-xs font-bold">
                       <span className="text-[#212121] uppercase">Category Proportions</span>
                       <span className="text-slate-400">Distribution Donut</span>
                     </div>
 
-                    <div className="aspect-[16/9] w-full bg-slate-50 border border-slate-150 rounded-sm p-3 flex items-center justify-center">
+                    <div className="aspect-[16/9] w-full bg-slate-50 border border-slate-150 rounded-lg p-3 flex items-center justify-center">
                       <svg viewBox="0 0 50 50" className="w-1/3 h-1/3 overflow-visible">
                         <circle cx="25" cy="25" r="15" fill="transparent" stroke="#E2E8F0" strokeWidth="6" />
                         <circle cx="25" cy="25" r="15" fill="transparent" stroke="#2874F0" strokeWidth="6" strokeDasharray="40 100" strokeDashoffset="0" />
@@ -512,7 +514,7 @@ export default function AdminDashboard() {
                 </div>
 
                 {/* PENDING ORDERS LIST WITH OTP VERIFICATION (Direct action in Overview) */}
-                <div className="bg-white border border-slate-200 rounded-sm p-4 md:p-6 shadow-sm text-xs font-semibold">
+                <div className="bg-white border border-slate-200 rounded-lg p-4 md:p-6 shadow-sm text-xs font-semibold">
                   <div className="border-b border-slate-100 pb-3 mb-4 select-none flex justify-between items-center">
                     <span className="text-[#212121] uppercase font-bold text-sm">Pending Dispatches Control Room</span>
                     <span className="text-[10px] bg-[#FB641B]/15 text-[#FB641B] px-2 py-0.5 rounded font-black uppercase">
@@ -523,7 +525,7 @@ export default function AdminDashboard() {
                   {orders.filter(o => o.orderStatus !== 'Delivered' && o.orderStatus !== 'Cancelled').length > 0 ? (
                     <div className="flex flex-col gap-4">
                       {orders.filter(o => o.orderStatus !== 'Delivered' && o.orderStatus !== 'Cancelled').map((ord) => (
-                        <div key={ord._id} className="bg-slate-50 border border-slate-200 rounded-sm p-4 flex flex-col gap-4 text-left shadow-sm">
+                        <div key={ord._id} className="bg-slate-50 border border-slate-200 rounded-lg p-4 flex flex-col gap-4 text-left shadow-sm">
                           
                           {/* Order info details */}
                           <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-200 text-slate-455 select-none">
@@ -544,7 +546,7 @@ export default function AdminDashboard() {
                                 <select
                                   value={ord.orderStatus}
                                   onChange={(e) => updateStatus(ord._id, e.target.value, null)}
-                                  className="bg-white border border-slate-350 rounded-sm py-1 px-2.5 font-bold outline-none text-slate-800 text-[11px]"
+                                  className="bg-white border border-slate-350 rounded-lg py-1 px-2.5 font-bold outline-none text-slate-800 text-[11px]"
                                 >
                                   <option value="Pending">Pending</option>
                                   <option value="Confirmed">Confirmed</option>
@@ -561,7 +563,7 @@ export default function AdminDashboard() {
                                   value={ord.paymentStatus}
                                   disabled={ord.paymentMethod === 'Razorpay'}
                                   onChange={(e) => updateStatus(ord._id, null, e.target.value)}
-                                  className={`border border-slate-350 rounded-sm py-1 px-2.5 font-bold outline-none text-[11px] ${
+                                  className={`border border-slate-350 rounded-lg py-1 px-2.5 font-bold outline-none text-[11px] ${
                                     ord.paymentMethod === 'Razorpay'
                                       ? 'text-slate-400 bg-slate-100 cursor-not-allowed'
                                       : 'text-slate-800 bg-white'
@@ -576,7 +578,7 @@ export default function AdminDashboard() {
 
                             <button
                               onClick={() => handleDownloadInvoice(ord._id)}
-                              className="h-8 px-3.5 bg-white border border-slate-350 hover:bg-slate-50 text-slate-800 font-bold text-[10px] uppercase rounded-sm flex items-center gap-1 shadow-sm transition-colors outline-none"
+                              className="h-8 px-3.5 bg-white border border-slate-350 hover:bg-slate-50 text-slate-800 font-bold text-[10px] uppercase rounded-lg flex items-center gap-1 shadow-sm transition-colors outline-none"
                             >
                               <FileText className="w-3.5 h-3.5 text-[#FB641B]" /> Print Invoice PDF
                             </button>
@@ -635,7 +637,7 @@ export default function AdminDashboard() {
                       ))}
                     </div>
                   ) : (
-                    <div className="bg-slate-50 border border-slate-150 p-8 text-center rounded-sm select-none">
+                    <div className="bg-slate-50 border border-slate-150 p-8 text-center rounded-lg select-none">
                       <span className="text-2xl block mb-2">🎉</span>
                       <h4 className="font-bold text-[#212121] text-xs uppercase">All dispatches cleared!</h4>
                       <p className="text-xs text-slate-400 mt-1 leading-relaxed font-medium">No pending or shipped orders require delivery verification actions right now.</p>
@@ -662,7 +664,7 @@ export default function AdminDashboard() {
                         placeholder="Search product..."
                         value={productSearch}
                         onChange={(e) => setProductSearch(e.target.value)}
-                        className="bg-white border border-slate-300 rounded-sm pl-8 pr-3 py-1 text-xs w-48 focus:border-slate-450 outline-none"
+                        className="bg-white border border-slate-300 rounded-lg pl-8 pr-3 py-1 text-xs w-48 focus:border-slate-450 outline-none"
                       />
                     </div>
 
@@ -674,7 +676,7 @@ export default function AdminDashboard() {
                         });
                         setNewProductForm(!newProductForm);
                       }}
-                      className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase px-3 py-1.5 rounded-sm flex items-center gap-1 shadow-sm"
+                      className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm"
                     >
                       <Plus className="w-3.5 h-3.5" /> Add Toy
                     </button>
@@ -683,7 +685,7 @@ export default function AdminDashboard() {
 
                 {/* Add/Edit Product form overlay */}
                 {newProductForm && (
-                  <form onSubmit={handleProductSubmit} className="bg-slate-50 border border-slate-200 rounded-sm p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-semibold text-slate-600 text-left">
+                  <form onSubmit={handleProductSubmit} className="bg-slate-50 border border-slate-200 rounded-lg p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-semibold text-slate-600 text-left">
                     <h3 className="sm:col-span-2 font-bold text-xs text-[#212121] uppercase border-b border-slate-200 pb-2 mb-1">
                       {editingProduct ? 'Modify Product Specifications' : 'New Toy Registration'}
                     </h3>
@@ -796,13 +798,13 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="sm:col-span-2 pt-2 flex gap-2">
-                      <button type="submit" className="h-9 px-4 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase rounded-sm shadow-sm">
+                      <button type="submit" className="h-9 px-4 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase rounded-lg shadow-sm">
                         {editingProduct ? 'Update Specifications' : 'Save Entry'}
                       </button>
                       <button 
                         type="button" 
                         onClick={() => { setNewProductForm(false); setEditingProduct(null); }}
-                        className="h-9 px-4 bg-white border border-slate-300 text-slate-650 font-bold text-xs uppercase rounded-sm shadow-sm hover:bg-slate-50"
+                        className="h-9 px-4 bg-white border border-slate-300 text-slate-650 font-bold text-xs uppercase rounded-lg shadow-sm hover:bg-slate-50"
                       >
                         Cancel
                       </button>
@@ -812,7 +814,7 @@ export default function AdminDashboard() {
                 )}
 
                 {/* Tabular Lists Products */}
-                <div className="bg-white border border-slate-200 rounded-sm shadow-sm overflow-hidden select-none">
+                <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden select-none">
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs font-semibold text-slate-550 text-left border-collapse">
                       <thead>
@@ -828,7 +830,7 @@ export default function AdminDashboard() {
                         {filteredProducts.map((prod) => (
                           <tr key={prod._id} className="hover:bg-slate-50/50">
                             <td className="px-4 py-3 flex items-center gap-3">
-                              <img src={prod.images?.[0]} alt="toy" className="w-8 h-8 rounded-sm object-contain border border-slate-100 bg-white" />
+                              <img src={prod.images?.[0]} alt="toy" className="w-8 h-8 rounded-lg object-contain border border-slate-100 bg-white" />
                               <div className="min-w-0">
                                 <h4 className="font-bold text-[#212121] text-xs line-clamp-1">{prod.name}</h4>
                                 <span className="text-[10px] text-[#2874F0] font-bold">{prod.category?.name || 'Category'}</span>
@@ -837,7 +839,7 @@ export default function AdminDashboard() {
                             <td className="px-4 py-3 font-mono text-[#212121]">{prod.sku}</td>
                             <td className="px-4 py-3 font-bold text-[#212121]">₹{prod.discountPrice || prod.price}</td>
                             <td className="px-4 py-3">
-                              <span className={`px-2 py-0.5 rounded-sm text-[10px] font-bold uppercase ${
+                              <span className={`px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase ${
                                 prod.stock > 10 ? 'bg-[#388E3C]/10 text-[#388E3C]' : 'bg-[#FB641B]/10 text-[#FB641B]'
                               }`}>
                                 Qty: {prod.stock}
@@ -861,13 +863,13 @@ export default function AdminDashboard() {
                                     });
                                     setNewProductForm(true);
                                   }}
-                                  className="p-1.5 border border-slate-200 rounded-sm hover:text-[#2874F0]"
+                                  className="p-1.5 border border-slate-200 rounded-lg hover:text-[#2874F0]"
                                 >
                                   <Edit3 className="w-3.5 h-3.5" />
                                 </button>
                                 <button
-                                  onClick={() => deleteProductItem(prod._id)}
-                                  className="p-1.5 border border-slate-200 rounded-sm hover:text-red-500"
+                                  onClick={() => setProductToDelete(prod._id)}
+                                  className="p-1.5 border border-slate-200 rounded-lg hover:text-red-500"
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>
@@ -895,14 +897,14 @@ export default function AdminDashboard() {
                       setCategoryFormData({ name: '', image: '', description: '' });
                       setNewCategoryForm(!newCategoryForm);
                     }}
-                    className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase px-3 py-1.5 rounded-sm flex items-center gap-1 shadow-sm"
+                    className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm"
                   >
                     <Plus className="w-3.5 h-3.5" /> Add Category
                   </button>
                 </div>
 
                 {newCategoryForm && (
-                  <form onSubmit={handleCategorySubmit} className="bg-slate-50 border border-slate-200 rounded-sm p-4 grid grid-cols-1 gap-3 text-xs font-semibold text-slate-600 text-left">
+                  <form onSubmit={handleCategorySubmit} className="bg-slate-50 border border-slate-200 rounded-lg p-4 grid grid-cols-1 gap-3 text-xs font-semibold text-slate-600 text-left">
                     <h3 className="font-bold text-xs text-[#212121] uppercase border-b border-slate-200 pb-2 mb-1">
                       {editingCategory ? 'Update Category Node' : 'Register Category'}
                     </h3>
@@ -943,10 +945,10 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="pt-2 flex gap-2">
-                      <button type="submit" className="h-9 px-4 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase rounded-sm shadow-sm">
+                      <button type="submit" className="h-9 px-4 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase rounded-lg shadow-sm">
                         Save Category
                       </button>
-                      <button type="button" onClick={() => { setNewCategoryForm(false); setEditingCategory(null); }} className="h-9 px-4 bg-white border border-slate-300 text-slate-650 font-bold text-xs uppercase rounded-sm shadow-sm hover:bg-slate-50">
+                      <button type="button" onClick={() => { setNewCategoryForm(false); setEditingCategory(null); }} className="h-9 px-4 bg-white border border-slate-300 text-slate-650 font-bold text-xs uppercase rounded-lg shadow-sm hover:bg-slate-50">
                         Cancel
                       </button>
                     </div>
@@ -957,9 +959,9 @@ export default function AdminDashboard() {
                 {/* Categories Grid lists */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 select-none">
                   {categories.map((cat) => (
-                    <div key={cat._id} className="bg-white border border-slate-200 rounded-sm p-4 flex items-center justify-between gap-4 shadow-sm">
+                    <div key={cat._id} className="bg-white border border-slate-200 rounded-lg p-4 flex items-center justify-between gap-4 shadow-sm">
                       <div className="flex items-center gap-3">
-                        <img src={cat.image} alt="category" className="w-10 h-10 rounded-sm object-cover border border-slate-100" />
+                        <img src={cat.image} alt="category" className="w-10 h-10 rounded-lg object-cover border border-slate-100" />
                         <div>
                           <h4 className="font-bold text-[#212121] text-xs">{cat.name}</h4>
                           <p className="text-[10px] text-slate-450 line-clamp-1 mt-0.5">{cat.description || 'No summary specifications'}</p>
@@ -975,7 +977,7 @@ export default function AdminDashboard() {
                           });
                           setNewCategoryForm(true);
                         }}
-                        className="p-1.5 border border-slate-200 rounded-sm hover:text-[#2874F0]"
+                        className="p-1.5 border border-slate-200 rounded-lg hover:text-[#2874F0]"
                       >
                         <Edit3 className="w-3.5 h-3.5" />
                       </button>
@@ -1001,14 +1003,14 @@ export default function AdminDashboard() {
                       placeholder="Search order ID / Buyer..."
                       value={orderSearch}
                       onChange={(e) => setOrderSearch(e.target.value)}
-                      className="bg-white border border-slate-300 rounded-sm pl-8 pr-3 py-1 text-xs w-48 focus:border-slate-450 outline-none"
+                      className="bg-white border border-slate-300 rounded-lg pl-8 pr-3 py-1 text-xs w-48 focus:border-slate-450 outline-none"
                     />
                   </div>
                 </div>
 
                 <div className="flex flex-col gap-4">
                   {filteredOrders.map((ord) => (
-                    <div key={ord._id} className="bg-white border border-slate-200 rounded-sm p-4 flex flex-col gap-4 text-left shadow-sm">
+                    <div key={ord._id} className="bg-white border border-slate-200 rounded-lg p-4 flex flex-col gap-4 text-left shadow-sm">
                       
                       {/* Order info details */}
                       <div className="flex flex-wrap items-center justify-between gap-3 pb-3 border-b border-slate-100 text-slate-450 select-none">
@@ -1030,7 +1032,7 @@ export default function AdminDashboard() {
                               value={ord.orderStatus}
                               disabled={ord.orderStatus === 'Cancelled' || ord.orderStatus === 'Delivered'}
                               onChange={(e) => updateStatus(ord._id, e.target.value, null)}
-                              className={`bg-white border border-slate-350 rounded-sm py-1 px-2.5 font-bold outline-none text-[11px] ${
+                              className={`bg-white border border-slate-350 rounded-lg py-1 px-2.5 font-bold outline-none text-[11px] ${
                                 (ord.orderStatus === 'Cancelled' || ord.orderStatus === 'Delivered')
                                   ? 'text-slate-400 cursor-not-allowed bg-slate-50'
                                   : 'text-slate-800'
@@ -1048,7 +1050,7 @@ export default function AdminDashboard() {
                           {ord.orderStatus === 'Cancelled' && (
                             <button
                               onClick={() => updateStatus(ord._id, 'Pending', null)}
-                              className="h-7 px-3 bg-indigo-600 hover:bg-indigo-750 text-white font-extrabold text-[10px] uppercase rounded-sm flex items-center gap-1 shadow-sm active:scale-95 transition-all outline-none"
+                              className="h-7 px-3 bg-indigo-600 hover:bg-indigo-750 text-white font-extrabold text-[10px] uppercase rounded-lg flex items-center gap-1 shadow-sm active:scale-95 transition-all outline-none"
                             >
                               🔄 Restart Order Tracking & Re-activate
                             </button>
@@ -1060,7 +1062,7 @@ export default function AdminDashboard() {
                               value={ord.paymentStatus}
                               disabled={ord.paymentMethod === 'Razorpay'}
                               onChange={(e) => updateStatus(ord._id, null, e.target.value)}
-                              className={`border border-slate-350 rounded-sm py-1 px-2.5 font-bold outline-none text-[11px] ${
+                              className={`border border-slate-350 rounded-lg py-1 px-2.5 font-bold outline-none text-[11px] ${
                                 ord.paymentMethod === 'Razorpay'
                                   ? 'text-slate-400 bg-slate-100 cursor-not-allowed'
                                   : 'text-slate-800 bg-white'
@@ -1075,7 +1077,7 @@ export default function AdminDashboard() {
 
                         <button
                           onClick={() => handleDownloadInvoice(ord._id)}
-                          className="h-8 px-3.5 bg-white border border-slate-350 hover:bg-slate-50 text-slate-800 font-bold text-[10px] uppercase rounded-sm flex items-center gap-1 shadow-sm transition-colors outline-none"
+                          className="h-8 px-3.5 bg-white border border-slate-350 hover:bg-slate-50 text-slate-800 font-bold text-[10px] uppercase rounded-lg flex items-center gap-1 shadow-sm transition-colors outline-none"
                         >
                           <FileText className="w-3.5 h-3.5 text-[#FB641B]" /> Print Invoice PDF
                         </button>
@@ -1153,14 +1155,14 @@ export default function AdminDashboard() {
                   <h2 className="text-sm font-bold text-[#212121] uppercase">Promo Codes</h2>
                   <button
                     onClick={() => setNewCouponForm(!newCouponForm)}
-                    className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase px-3 py-1.5 rounded-sm flex items-center gap-1 shadow-sm"
+                    className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase px-3 py-1.5 rounded-lg flex items-center gap-1 shadow-sm"
                   >
                     <Plus className="w-3.5 h-3.5" /> Create Coupon
                   </button>
                 </div>
 
                 {newCouponForm && (
-                  <form onSubmit={handleCouponSubmit} className="bg-slate-50 border border-slate-200 rounded-sm p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-semibold text-slate-650 text-left">
+                  <form onSubmit={handleCouponSubmit} className="bg-slate-50 border border-slate-200 rounded-lg p-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-semibold text-slate-650 text-left">
                     <h3 className="sm:col-span-2 font-bold text-xs text-[#212121] uppercase border-b border-slate-200 pb-2 mb-1">
                       New Voucher Configuration
                     </h3>
@@ -1225,10 +1227,10 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="sm:col-span-2 pt-2 flex gap-2">
-                      <button type="submit" className="h-9 px-4 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase rounded-sm shadow-sm">
+                      <button type="submit" className="h-9 px-4 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase rounded-lg shadow-sm">
                         Create Promo Code
                       </button>
-                      <button type="button" onClick={() => setNewCouponForm(false)} className="h-9 px-4 bg-white border border-slate-300 text-slate-650 font-bold text-xs uppercase rounded-sm shadow-sm hover:bg-slate-50">
+                      <button type="button" onClick={() => setNewCouponForm(false)} className="h-9 px-4 bg-white border border-slate-300 text-slate-650 font-bold text-xs uppercase rounded-lg shadow-sm hover:bg-slate-50">
                         Cancel
                       </button>
                     </div>
@@ -1237,7 +1239,7 @@ export default function AdminDashboard() {
                 )}
 
                 {/* Coupons Tabular Sheet */}
-                <div className="bg-white border border-slate-200 rounded-sm shadow-sm overflow-hidden select-none">
+                <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden select-none">
                   <div className="overflow-x-auto">
                     <table className="w-full text-xs font-semibold text-slate-550 text-left border-collapse">
                       <thead>
@@ -1262,8 +1264,8 @@ export default function AdminDashboard() {
                             </td>
                             <td className="px-4 py-3 text-center">
                               <button
-                                onClick={() => deleteCouponItem(cp._id)}
-                                className="p-1.5 border border-slate-200 rounded-sm hover:text-red-500"
+                                onClick={() => setCouponToDelete(cp._id)}
+                                className="p-1.5 border border-slate-200 rounded-lg hover:text-red-500"
                               >
                                 <Trash2 className="w-3.5 h-3.5" />
                               </button>
@@ -1282,6 +1284,30 @@ export default function AdminDashboard() {
 
         </div>
       </div>
+
+      <ConfirmationModal
+        isOpen={!!productToDelete}
+        onClose={() => setProductToDelete(null)}
+        onConfirm={() => {
+          deleteProductItem(productToDelete);
+          setProductToDelete(null);
+        }}
+        title="Delete Product?"
+        message="Are you sure you want to permanently remove this product from the catalog?"
+        confirmText="Yes, Delete"
+      />
+
+      <ConfirmationModal
+        isOpen={!!couponToDelete}
+        onClose={() => setCouponToDelete(null)}
+        onConfirm={() => {
+          deleteCouponItem(couponToDelete);
+          setCouponToDelete(null);
+        }}
+        title="Delete Coupon?"
+        message="Are you sure you want to permanently remove this coupon code?"
+        confirmText="Yes, Delete"
+      />
 
     </div>
   );

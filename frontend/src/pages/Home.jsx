@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useAppContext } from '../context/AppContext';
 import ProductCard from '../components/ProductCard';
 import SkeletonCard from '../components/SkeletonCard';
-import { 
+import {
   ArrowRight, ShieldCheck, Truck, RotateCcw, Star,
   ChevronLeft, ChevronRight, Sparkles, Gift, Zap
 } from 'lucide-react';
@@ -127,13 +127,13 @@ export default function Home() {
       </div>
 
       {/* ── Hero Banner ── */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 pt-6 mb-8">
-        <div className="relative rounded-3xl overflow-hidden h-[260px] md:h-[360px] bg-white border border-violet-100 shadow-lg shadow-violet-100 group">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 pt-4 sm:pt-6 mb-6 sm:mb-8">
+        <div className="relative rounded-2xl overflow-hidden h-[220px] sm:h-[260px] md:h-[360px] bg-white border border-violet-100 shadow-lg shadow-violet-100 group">
 
           <div className="absolute inset-0 flex h-full">
 
             {/* LEFT: Text panel */}
-            <div className={`relative w-full md:w-1/2 h-full bg-gradient-to-br ${current.gradient} flex flex-col justify-center px-8 md:px-12 py-8 z-10`}>
+            <div className={`relative w-full md:w-1/2 h-full bg-gradient-to-br ${current.gradient} flex flex-col justify-center px-5 sm:px-8 md:px-12 py-6 sm:py-8 z-10`}>
               {/* subtle circle decoration */}
               <div className="absolute top-0 right-0 w-40 h-40 rounded-full bg-white/5 -translate-y-1/2 translate-x-1/2" />
               <div className="absolute bottom-0 left-0 w-24 h-24 rounded-full bg-white/5 translate-y-1/2 -translate-x-1/2" />
@@ -141,7 +141,7 @@ export default function Home() {
               <span className={`inline-block ${current.badgeColor} text-[10px] font-black px-3 py-1 rounded-full mb-4 uppercase tracking-widest w-max`}>
                 {current.badge}
               </span>
-              <h1 className="text-xl md:text-3xl font-black text-white leading-tight mb-1.5" style={{ fontFamily: 'Poppins, sans-serif' }}>
+              <h1 className="text-lg sm:text-xl md:text-3xl font-black text-white leading-tight mb-1.5" style={{ fontFamily: 'Poppins, sans-serif' }}>
                 {current.title}
               </h1>
               <p className="text-white/70 text-xs md:text-sm font-medium mb-1">{current.subtitle}</p>
@@ -190,8 +190,8 @@ export default function Home() {
       </div>
 
       {/* ── Trust Badges ── */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 mb-10">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 mb-6 sm:mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           {TRUST_BADGES.map(({ icon: Icon, title, desc, color, bg }) => (
             <div key={title} className="bg-white rounded-2xl border border-violet-100 p-5 flex items-center gap-4 hover:shadow-md hover:shadow-violet-50 transition-all">
               <div className={`w-12 h-12 ${bg} rounded-2xl flex items-center justify-center shrink-0`}>
@@ -207,20 +207,20 @@ export default function Home() {
       </div>
 
       {/* ── Trending Products ── */}
-      <section className="max-w-7xl mx-auto px-4 md:px-6 mb-10">
-        <div className="bg-white rounded-3xl border border-violet-100 p-6 md:p-8 shadow-sm">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-xl font-bold text-indigo-950" style={{ fontFamily: 'Poppins, sans-serif' }}>
+      <section className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 mb-6 sm:mb-10">
+        <div className="bg-white rounded-xl sm:rounded-2xl border border-violet-100 p-4 sm:p-6 md:p-8 shadow-sm">
+          <div className="flex items-start sm:items-center justify-between mb-4 sm:mb-6 gap-2">
+            <div className="min-w-0">
+              <h2 className="text-base sm:text-xl font-bold text-indigo-950" style={{ fontFamily: 'Poppins, sans-serif' }}>
                 🔥 Trending Right Now
               </h2>
-              <p className="text-sm text-gray-500 mt-0.5">Toys families are loving across India</p>
+              <p className="text-xs sm:text-sm text-gray-500 mt-0.5">Toys families are loving across India</p>
             </div>
-            <Link to="/shop" className="flex items-center gap-1.5 text-sm font-semibold text-violet-700 hover:text-violet-900 bg-violet-50 hover:bg-violet-100 px-4 py-2 rounded-xl transition-all">
+            <Link to="/shop" className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm font-semibold text-violet-700 hover:text-violet-900 bg-violet-50 hover:bg-violet-100 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl transition-all shrink-0 whitespace-nowrap">
               View All <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {loading ? Array(4).fill(0).map((_, i) => <SkeletonCard key={i} />) :
               trending.map(prod => <ProductCard key={prod._id} product={prod} />)}
           </div>
@@ -228,8 +228,8 @@ export default function Home() {
       </section>
 
       {/* ── Feature Spotlight ── */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 mb-10">
-        <div className="bg-gradient-to-br from-violet-700 to-purple-800 rounded-3xl p-8 md:p-12 flex flex-col md:flex-row items-center gap-8 shadow-xl shadow-violet-200 overflow-hidden relative">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 mb-6 sm:mb-10">
+        <div className="bg-gradient-to-br from-violet-700 to-purple-800 rounded-xl sm:rounded-2xl p-5 sm:p-8 md:p-12 flex flex-col md:flex-row items-center gap-5 sm:gap-8 shadow-xl shadow-violet-200 overflow-hidden relative">
           <div className="absolute inset-0 opacity-10">
             <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
             <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-1/2 -translate-x-1/2" />
@@ -238,7 +238,7 @@ export default function Home() {
             <span className="inline-block bg-white/20 backdrop-blur-sm text-white text-[11px] font-bold px-3 py-1 rounded-full mb-4 uppercase tracking-widest">
               ✨ Featured Collection
             </span>
-            <h2 className="text-2xl md:text-3xl font-black mb-3 leading-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-black mb-3 leading-tight" style={{ fontFamily: 'Poppins, sans-serif' }}>
               MagConstruct Magnetic Building Tiles
             </h2>
             <p className="text-white/70 text-sm leading-relaxed mb-6">
@@ -251,7 +251,7 @@ export default function Home() {
               Explore Kits <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-          <div className="relative z-10 w-full md:w-80 aspect-square md:aspect-[4/3] rounded-2xl overflow-hidden border-4 border-white/20 shadow-xl shrink-0">
+          <div className="relative z-10 w-full md:w-80 aspect-[16/10] sm:aspect-square md:aspect-[4/3] rounded-2xl overflow-hidden border-4 border-white/20 shadow-xl shrink-0">
             <img
               src="https://images.unsplash.com/photo-1587654780291-39c9404d746b?auto=format&fit=crop&q=80&w=600"
               alt="Feature"
@@ -262,49 +262,35 @@ export default function Home() {
       </div>
 
       {/* ── Best Sellers ── */}
-      <section className="max-w-7xl mx-auto px-4 md:px-6 mb-10">
-        <div className="bg-white rounded-3xl border border-violet-100 p-6 md:p-8 shadow-sm">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-xl font-bold text-indigo-950" style={{ fontFamily: 'Poppins, sans-serif' }}>
+      <section className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 mb-6 sm:mb-10">
+        <div className="bg-white rounded-xl sm:rounded-2xl border border-violet-100 p-4 sm:p-6 md:p-8 shadow-sm">
+          <div className="flex items-start sm:items-center justify-between mb-4 sm:mb-6 gap-2">
+            <div className="min-w-0">
+              <h2 className="text-base sm:text-xl font-bold text-indigo-950" style={{ fontFamily: 'Poppins, sans-serif' }}>
                 ⭐ Best Sellers
               </h2>
-              <p className="text-sm text-gray-500 mt-0.5">Top-rated by parents and educators across the country</p>
+              <p className="text-xs sm:text-sm text-gray-500 mt-0.5">Top-rated by parents and educators</p>
             </div>
-            <Link to="/shop" className="flex items-center gap-1.5 text-sm font-semibold text-violet-700 hover:text-violet-900 bg-violet-50 hover:bg-violet-100 px-4 py-2 rounded-xl transition-all">
+            <Link to="/shop" className="flex items-center gap-1 sm:gap-1.5 text-xs sm:text-sm font-semibold text-violet-700 hover:text-violet-900 bg-violet-50 hover:bg-violet-100 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl transition-all shrink-0 whitespace-nowrap">
               View All <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {loading ? Array(4).fill(0).map((_, i) => <SkeletonCard key={i} />) :
               bestSellers.map(prod => <ProductCard key={prod._id} product={prod} />)}
           </div>
         </div>
       </section>
 
-      {/* ── Brand Strip ── */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 mb-10 select-none">
-        <div className="bg-white rounded-3xl border border-violet-100 px-8 py-6 shadow-sm text-center">
-          <p className="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-5">Trusted Brands We Carry</p>
-          <div className="flex flex-wrap items-center justify-center gap-8 md:gap-14">
-            {['LEGO', 'HAMLEYS', 'DISNEY', 'MELISSA & DOUG', 'FISHER-PRICE'].map(brand => (
-              <span key={brand} className="text-sm font-black text-gray-300 hover:text-violet-400 transition-colors cursor-default tracking-wider">
-                {brand}
-              </span>
-            ))}
-          </div>
-        </div>
-      </div>
-
       {/* ── Testimonials ── */}
-      <section className="max-w-7xl mx-auto px-4 md:px-6 mb-12">
+      <section className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 mb-8 sm:mb-12">
         <div className="text-center mb-8">
           <h2 className="text-xl font-bold text-indigo-950" style={{ fontFamily: 'Poppins, sans-serif' }}>
             💬 What Parents Say
           </h2>
           <p className="text-sm text-gray-500 mt-1">Real reviews from families who shop with ToyBox</p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-5">
           {REVIEWS.map(rev => (
             <div key={rev.id} className="bg-white rounded-2xl border border-violet-100 p-6 hover:shadow-md hover:shadow-violet-50 transition-all flex flex-col gap-4">
               <div className="flex gap-0.5">
@@ -328,10 +314,10 @@ export default function Home() {
       </section>
 
       {/* ── Newsletter CTA ── */}
-      <div className="max-w-7xl mx-auto px-4 md:px-6 mb-12">
-        <div className="bg-gradient-to-r from-amber-400 to-orange-400 rounded-3xl p-8 md:p-12 text-center shadow-xl shadow-amber-100">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 mb-8 sm:mb-12">
+        <div className="bg-gradient-to-r from-amber-400 to-orange-400 rounded-xl sm:rounded-2xl p-5 sm:p-8 md:p-12 text-center shadow-xl shadow-amber-100">
           <Sparkles className="w-10 h-10 text-amber-900/50 mx-auto mb-3" />
-          <h2 className="text-2xl font-black text-amber-900 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
+          <h2 className="text-xl sm:text-2xl font-black text-amber-900 mb-2" style={{ fontFamily: 'Poppins, sans-serif' }}>
             Exclusive Deals, Just for You
           </h2>
           <p className="text-amber-800/70 text-sm mb-6">Join 50,000+ parents getting weekly toy deals, parenting tips &amp; early sale access.</p>

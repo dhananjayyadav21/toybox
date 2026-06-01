@@ -269,7 +269,7 @@ export default function ProductDetails() {
                 />
                 
                 {discountPercent > 0 && (
-                  <span className="absolute top-3 left-3 bg-[#388E3C] text-white text-[10px] font-bold px-2 py-0.5 rounded-sm">
+                  <span className="absolute top-3 left-3 bg-[#388E3C] text-white text-[10px] font-bold px-2 py-0.5 rounded-lg">
                     {discountPercent}% OFF
                   </span>
                 )}
@@ -317,7 +317,7 @@ export default function ProductDetails() {
 
               {/* Ratings Summary */}
               <div className="flex items-center gap-2 select-none border-b border-slate-100 pb-3">
-                <span className="inline-flex items-center gap-0.5 bg-[#388E3C] text-white text-[11px] font-bold px-2 py-0.5 rounded-sm">
+                <span className="inline-flex items-center gap-0.5 bg-[#388E3C] text-white text-[11px] font-bold px-2 py-0.5 rounded-lg">
                   {averageRating} <Star className="w-3 h-3 fill-current" />
                 </span>
                 <span className="text-xs font-semibold text-[#878787]">
@@ -343,11 +343,11 @@ export default function ProductDetails() {
                 <div className="text-right">
                   <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider block">Availability</span>
                   {product.stock > 0 ? (
-                    <span className="inline-block mt-1 bg-[#388E3C]/10 text-[#388E3C] text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase">
+                    <span className="inline-block mt-1 bg-[#388E3C]/10 text-[#388E3C] text-[10px] font-bold px-2 py-0.5 rounded-lg uppercase">
                       In Stock ({product.stock} left)
                     </span>
                   ) : (
-                    <span className="inline-block mt-1 bg-red-50 text-red-650 text-[10px] font-bold px-2 py-0.5 rounded-sm uppercase">
+                    <span className="inline-block mt-1 bg-red-50 text-red-650 text-[10px] font-bold px-2 py-0.5 rounded-lg uppercase">
                       Out of stock
                     </span>
                   )}
@@ -383,7 +383,7 @@ export default function ProductDetails() {
               </div>
 
               {/* Tabs Selector (Story / Specs / Safety) */}
-              <div className="border-b border-slate-200 flex gap-4 text-xs font-bold uppercase select-none">
+              <div className="border-b border-slate-200 flex gap-2 sm:gap-4 text-xs font-bold uppercase select-none overflow-x-auto scrollbar-none">
                 <button 
                   onClick={() => setActiveTab('story')}
                   className={`pb-2.5 ${activeTab === 'story' ? 'text-[#2874F0] border-b-2 border-[#2874F0]' : 'text-slate-400'}`}
@@ -458,7 +458,7 @@ export default function ProductDetails() {
                   </div>
 
                   {/* Actions buttons (height 44px desktop, 40px mobile) */}
-                  <div className="flex-1 flex gap-2 min-w-[280px]">
+                  <div className="flex-1 flex flex-wrap sm:flex-nowrap gap-2 min-w-0">
                     <button 
                       onClick={() => addToCart(product._id, qty)}
                       className="h-10 md:h-11 bg-[#FF9F00] hover:bg-[#e68e00] text-[#212121] font-bold text-xs uppercase rounded-[6px] shadow-sm flex items-center justify-center gap-1.5 flex-1 transition-colors outline-none"
@@ -508,8 +508,8 @@ export default function ProductDetails() {
                   return (
                     <div key={stars} className="flex items-center gap-2 text-xs font-semibold text-slate-500">
                       <span className="w-6 shrink-0">{stars} ★</span>
-                      <div className="flex-1 h-2 bg-slate-250 rounded-sm overflow-hidden">
-                        <div className="h-full bg-[#388E3C] rounded-sm" style={{ width: `${percentage}%` }}></div>
+                      <div className="flex-1 h-2 bg-slate-250 rounded-lg overflow-hidden">
+                        <div className="h-full bg-[#388E3C] rounded-lg" style={{ width: `${percentage}%` }}></div>
                       </div>
                       <span className="w-12 text-right text-slate-400">{count} reviews</span>
                     </div>
@@ -573,7 +573,7 @@ export default function ProductDetails() {
                         <span>{new Date(rev.createdAt).toLocaleDateString()}</span>
                       </div>
                       
-                      <div className="inline-flex items-center gap-0.5 bg-[#388E3C] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-sm mb-2">
+                      <div className="inline-flex items-center gap-0.5 bg-[#388E3C] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-lg mb-2">
                         {rev.rating} <Star className="w-2.5 h-2.5 fill-current" />
                       </div>
 
@@ -601,7 +601,7 @@ export default function ProductDetails() {
             <h3 className="text-sm font-bold text-[#212121] uppercase mb-4 border-b border-slate-100 pb-2.5">
               Related Magical Products
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
               {relatedProducts.map(prod => (
                 <ProductCard key={prod._id} product={prod} />
               ))}
