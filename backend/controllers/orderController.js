@@ -151,6 +151,11 @@ export const updateOrderStatus = async (req, res) => {
     const order = await Order.findById(req.params.id);
 
     if (order) {
+      // Prevent modifications to successfully delivered orders
+      if (order.orderStatus === 'Delivered') {
+        return res.status(400).json({ message: 'Delivered orders are locked and cannot be modified by administrators.' });
+      }
+
       // Validate payment for online orders before confirming/packing/shipping
       if (orderStatus && orderStatus !== 'Pending' && orderStatus !== 'Cancelled') {
         const currentPaymentStatus = paymentStatus || order.paymentStatus;
@@ -181,12 +186,6 @@ export const updateOrderStatus = async (req, res) => {
 
       order.orderStatus = orderStatus || order.orderStatus;
       if (paymentStatus) {
-        // Block manual paymentStatus update for online Razorpay orders
-        if (order.paymentMethod === 'Razorpay' && paymentStatus !== order.paymentStatus) {
-          return res.status(400).json({ 
-            message: 'Settlement for online Razorpay orders is handled automatically by the gateway and cannot be modified manually!' 
-          });
-        }
         order.paymentStatus = paymentStatus;
       }
       const updatedOrder = await order.save();
@@ -254,6 +253,10 @@ export const sendDeliveryOtp = async (req, res) => {
     const order = await Order.findById(req.params.id).populate('user', 'name email mobile');
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
+    }
+
+    if (order.paymentStatus !== 'Paid') {
+      return res.status(400).json({ message: 'Settlement must be marked as Paid before sending delivery OTP' });
     }
 
     // Generate 6-digit OTP code for delivery

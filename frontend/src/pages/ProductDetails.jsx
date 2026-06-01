@@ -193,9 +193,15 @@ export default function ProductDetails() {
   const handlePincodeCheck = (e) => {
     e.preventDefault();
     if (pincode.trim().length === 6 && /^\d+$/.test(pincode)) {
+      const deliveryDate = new Date();
+      deliveryDate.setDate(deliveryDate.getDate() + 2);
+      const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+      const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const formattedDate = `${days[deliveryDate.getDay()]}, ${deliveryDate.getDate()} ${months[deliveryDate.getMonth()]}`;
+
       setPincodeResult({
         success: true,
-        message: 'Delivery by Thursday, Jun 4 | Free Shipping'
+        message: `Delivery by ${formattedDate} | Free Shipping`
       });
     } else {
       setPincodeResult({
@@ -441,15 +447,15 @@ export default function ProductDetails() {
 
               {/* Quantity Select & Sticky Purchase Options */}
               {product.stock > 0 && (
-                <div className="border-t border-slate-100 pt-4 flex flex-wrap items-center gap-3">
+                <div className="border-t border-slate-100 pt-4 flex flex-wrap lg:flex-nowrap items-center gap-2 sm:gap-3">
                   
                   {/* Quantity Dropdown */}
                   <div className="flex items-center gap-2 text-xs font-semibold select-none">
-                    <span className="text-slate-500">Qty:</span>
+                    <span className="text-slate-500 hidden sm:inline">Qty:</span>
                     <select 
                       value={qty}
                       onChange={(e) => setQty(Number(e.target.value))}
-                      className="bg-white border border-slate-300 rounded-[6px] p-1 px-2.5 font-bold outline-none text-slate-800 h-9"
+                      className="bg-white border border-slate-300 rounded-[6px] p-1 px-1.5 sm:px-2.5 font-bold outline-none text-slate-800 h-10 md:h-11 cursor-pointer"
                     >
                       {Array.from({ length: Math.min(10, product.stock) }, (_, i) => i + 1).map(n => (
                         <option key={n} value={n}>{n}</option>
@@ -458,26 +464,26 @@ export default function ProductDetails() {
                   </div>
 
                   {/* Actions buttons (height 44px desktop, 40px mobile) */}
-                  <div className="flex-1 flex flex-wrap sm:flex-nowrap gap-2 min-w-0">
+                  <div className="flex-1 flex gap-2 min-w-0">
                     <button 
                       onClick={() => addToCart(product._id, qty)}
-                      className="h-10 md:h-11 bg-[#FF9F00] hover:bg-[#e68e00] text-[#212121] font-bold text-xs uppercase rounded-[6px] shadow-sm flex items-center justify-center gap-1.5 flex-1 transition-colors outline-none"
+                      className="h-10 md:h-11 bg-[#FF9F00] hover:bg-[#e68e00] text-[#212121] font-bold text-[10px] md:text-xs uppercase rounded-[6px] shadow-sm flex items-center justify-center gap-1 md:gap-1.5 flex-1 transition-colors outline-none whitespace-nowrap px-1"
                     >
-                      <ShoppingCart className="w-4 h-4" /> Add to Basket
+                      <ShoppingCart className="w-3.5 h-3.5 md:w-4 md:h-4 shrink-0" /> Add to Cart
                     </button>
                     <button 
                       onClick={handleBuyNow}
-                      className="h-10 md:h-11 bg-[#FB641B] hover:bg-[#e15610] text-white font-bold text-xs uppercase rounded-[6px] shadow-sm flex items-center justify-center gap-1.5 flex-1 transition-colors outline-none"
+                      className="h-10 md:h-11 bg-[#FB641B] hover:bg-[#e15610] text-white font-bold text-[10px] md:text-xs uppercase rounded-[6px] shadow-sm flex items-center justify-center gap-1 md:gap-1.5 flex-1 transition-colors outline-none whitespace-nowrap px-1"
                     >
-                      <Zap className="w-4 h-4" /> Buy Now
+                      <Zap className="w-3.5 h-3.5 md:w-4 md:h-4 shrink-0" /> Buy Now
                     </button>
                     <button 
                       onClick={() => toggleWishlist(product._id)}
-                      className={`p-3 border rounded-[6px] shadow-sm transition-all h-10 md:h-11 flex items-center justify-center ${
+                      className={`p-2 md:p-3 border rounded-[6px] shadow-sm transition-all h-10 md:h-11 shrink-0 flex items-center justify-center ${
                         isInWishlist ? 'border-red-250 bg-rose-50 text-red-500 hover:bg-rose-100' : 'border-slate-300 hover:bg-slate-50 text-slate-400'
                       }`}
                     >
-                      <Heart className={`w-4.5 h-4.5 ${isInWishlist ? 'fill-current' : ''}`} />
+                      <Heart className={`w-4 h-4 md:w-4.5 md:h-4.5 ${isInWishlist ? 'fill-current' : ''}`} />
                     </button>
                   </div>
 

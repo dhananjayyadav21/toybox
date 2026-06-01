@@ -12,9 +12,12 @@ import {
   Trash2,
   Edit3,
   FileText,
-  Search
+  Search,
+  Users,
+  Star
 } from 'lucide-react';
 import ConfirmationModal from '../components/ConfirmationModal';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
 export default function AdminDashboard() {
   const { 
@@ -135,6 +138,41 @@ export default function AdminDashboard() {
       pendingOrders: pendingOrdersCount
     };
   }, [orders, usersList, products]);
+
+  // Prepare Graph Data
+  const { salesData, categoryData } = useMemo(() => {
+    // Sales Timeline (Last 7 Days)
+    const salesTimeline = [];
+    const today = new Date();
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(d.getDate() - i);
+      salesTimeline.push({ date: d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }), amount: 0 });
+    }
+
+    orders.forEach(o => {
+      if (o.paymentStatus === 'Paid' || o.paymentMethod === 'COD') {
+        const orderDate = new Date(o.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        const dayMatch = salesTimeline.find(s => s.date === orderDate);
+        if (dayMatch) {
+          dayMatch.amount += o.totalAmount;
+        }
+      }
+    });
+
+    // Category Proportions
+    const catMap = {};
+    products.forEach(p => {
+      const catName = p.category?.name || 'Uncategorized';
+      catMap[catName] = (catMap[catName] || 0) + 1;
+    });
+    
+    const catData = Object.keys(catMap).map(k => ({ name: k, value: catMap[k] }));
+
+    return { salesData: salesTimeline, categoryData: catData };
+  }, [orders, products]);
+
+  const COLORS = ['#2874F0', '#FB641B', '#FF9F00', '#388E3C', '#878787'];
 
   // CRUD API: PRODUCTS
   const handleProductSubmit = async (e) => {
@@ -280,7 +318,7 @@ export default function AdminDashboard() {
   };
 
   const handleVerifyDeliveryOtp = async (orderId) => {
-    const otp = otpInput[orderId];
+    const otp = otpInput[orderId]?.trim();
     if (!otp || otp.length !== 6) {
       showToast('Please enter a valid 6-digit OTP code', 'error');
       return;
@@ -437,6 +475,24 @@ export default function AdminDashboard() {
             >
               <Tag className="w-4 h-4 shrink-0" /> Coupons
             </button>
+
+            <button
+              onClick={() => setAdminTab('users')}
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left text-xs uppercase transition-colors ${
+                adminTab === 'users' ? 'bg-[#2874F0] text-white font-bold' : 'hover:bg-[#202e43] text-slate-300'
+              }`}
+            >
+              <Users className="w-4 h-4 shrink-0" /> Customers
+            </button>
+
+            <button
+              onClick={() => setAdminTab('reviews')}
+              className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-left text-xs uppercase transition-colors ${
+                adminTab === 'reviews' ? 'bg-[#2874F0] text-white font-bold' : 'hover:bg-[#202e43] text-slate-300'
+              }`}
+            >
+              <Star className="w-4 h-4 shrink-0" /> Reviews
+            </button>
           </aside>
 
           {/* RIGHT AREA: Operations workspace */}
@@ -476,21 +532,16 @@ export default function AdminDashboard() {
                       <span className="text-slate-400">Interactive Line Graph</span>
                     </div>
 
-                    <div className="aspect-[16/9] w-full bg-slate-50 border border-slate-150 rounded-lg p-3 flex items-center justify-center">
-                      <svg viewBox="0 0 100 50" className="w-full h-full text-[#2874F0] overflow-visible">
-                        <line x1="0" y1="10" x2="100" y2="10" stroke="#E2E8F0" strokeWidth="0.5" strokeDasharray="2" />
-                        <line x1="0" y1="25" x2="100" y2="25" stroke="#E2E8F0" strokeWidth="0.5" strokeDasharray="2" />
-                        <line x1="0" y1="40" x2="100" y2="40" stroke="#E2E8F0" strokeWidth="0.5" strokeDasharray="2" />
-                        
-                        <path d="M 0 45 L 20 30 L 40 38 L 60 15 L 80 25 L 100 5 L 100 45 Z" fill="rgba(40,116,240,0.08)" />
-                        <path d="M 0 45 L 20 30 L 40 38 L 60 15 L 80 25 L 100 5" fill="none" stroke="#2874F0" strokeWidth="1.5" strokeLinecap="round" />
-                        
-                        <circle cx="20" cy="30" r="1" fill="#2874F0" />
-                        <circle cx="40" cy="38" r="1" fill="#2874F0" />
-                        <circle cx="60" cy="15" r="1" fill="#2874F0" />
-                        <circle cx="80" cy="25" r="1" fill="#2874F0" />
-                        <circle cx="100" cy="5" r="1.5" fill="#2874F0" stroke="#FFFFFF" strokeWidth="0.5" />
-                      </svg>
+                    <div className="h-[250px] lg:h-[300px] w-full bg-slate-50 border border-slate-150 rounded-lg p-3 flex items-center justify-center">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <LineChart data={salesData} margin={{ top: 5, right: 10, left: -20, bottom: 0 }}>
+                          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#E2E8F0" />
+                          <XAxis dataKey="date" tick={{fontSize: 10, fill: '#878787'}} axisLine={false} tickLine={false} />
+                          <YAxis tick={{fontSize: 10, fill: '#878787'}} axisLine={false} tickLine={false} tickFormatter={(value) => `₹${value}`} />
+                          <Tooltip contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}} labelStyle={{fontWeight: 'bold', color: '#212121'}} itemStyle={{color: '#2874F0', fontWeight: 'bold'}} formatter={(value) => [`₹${value}`, 'Sales']} />
+                          <Line type="monotone" dataKey="amount" stroke="#2874F0" strokeWidth={3} dot={{r: 4, strokeWidth: 2, fill: '#fff'}} activeDot={{r: 6}} />
+                        </LineChart>
+                      </ResponsiveContainer>
                     </div>
                   </div>
 
@@ -501,13 +552,31 @@ export default function AdminDashboard() {
                       <span className="text-slate-400">Distribution Donut</span>
                     </div>
 
-                    <div className="aspect-[16/9] w-full bg-slate-50 border border-slate-150 rounded-lg p-3 flex items-center justify-center">
-                      <svg viewBox="0 0 50 50" className="w-1/3 h-1/3 overflow-visible">
-                        <circle cx="25" cy="25" r="15" fill="transparent" stroke="#E2E8F0" strokeWidth="6" />
-                        <circle cx="25" cy="25" r="15" fill="transparent" stroke="#2874F0" strokeWidth="6" strokeDasharray="40 100" strokeDashoffset="0" />
-                        <circle cx="25" cy="25" r="15" fill="transparent" stroke="#FB641B" strokeWidth="6" strokeDasharray="30 100" strokeDashoffset="-40" />
-                        <circle cx="25" cy="25" r="15" fill="transparent" stroke="#FF9F00" strokeWidth="6" strokeDasharray="30 100" strokeDashoffset="-70" />
-                      </svg>
+                    <div className="h-[250px] lg:h-[300px] w-full bg-slate-50 border border-slate-150 rounded-lg p-1 flex flex-col items-center justify-center pb-0">
+                      {categoryData.length > 0 ? (
+                        <ResponsiveContainer width="100%" height="100%">
+                          <PieChart>
+                            <Pie
+                              data={categoryData}
+                              cx="50%"
+                              cy="45%"
+                              innerRadius="55%"
+                              outerRadius="75%"
+                              paddingAngle={5}
+                              dataKey="value"
+                              stroke="none"
+                            >
+                              {categoryData.map((entry, index) => (
+                                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                              ))}
+                            </Pie>
+                            <Tooltip contentStyle={{borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '11px'}} itemStyle={{fontWeight: 'bold'}} />
+                            <Legend verticalAlign="bottom" wrapperStyle={{fontSize: '10px', fontWeight: 'bold', color: '#878787', paddingTop: '10px'}} />
+                          </PieChart>
+                        </ResponsiveContainer>
+                      ) : (
+                        <span className="text-xs font-bold text-slate-400">No category data</span>
+                      )}
                     </div>
                   </div>
 
@@ -561,11 +630,11 @@ export default function AdminDashboard() {
                                 <span className="text-[11px] text-slate-400 font-bold uppercase">Settlement:</span>
                                 <select
                                   value={ord.paymentStatus}
-                                  disabled={ord.paymentMethod === 'Razorpay'}
+                                  disabled={ord.orderStatus === 'Delivered'}
                                   onChange={(e) => updateStatus(ord._id, null, e.target.value)}
                                   className={`border border-slate-350 rounded-lg py-1 px-2.5 font-bold outline-none text-[11px] ${
-                                    ord.paymentMethod === 'Razorpay'
-                                      ? 'text-slate-400 bg-slate-100 cursor-not-allowed'
+                                    ord.orderStatus === 'Delivered'
+                                      ? 'text-slate-400 bg-slate-50 cursor-not-allowed'
                                       : 'text-slate-800 bg-white'
                                   }`}
                                 >
@@ -612,6 +681,13 @@ export default function AdminDashboard() {
                                   className="h-8 px-4 bg-[#388E3C] hover:bg-[#2e7d32] text-white font-bold text-[10px] uppercase rounded-[4px] shadow-sm transition-colors outline-none"
                                 >
                                   Verify & Confirm Delivery
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleSendDeliveryOtp(ord._id)}
+                                  className="h-8 px-4 bg-[#FF9F00] hover:bg-[#e68f00] text-white font-bold text-[10px] uppercase rounded-[4px] shadow-sm transition-colors outline-none"
+                                >
+                                  Resend
                                 </button>
                                 <button
                                   type="button"
@@ -1060,11 +1136,11 @@ export default function AdminDashboard() {
                             <span className="text-[11px] text-slate-400 font-bold uppercase">Settlement:</span>
                             <select
                               value={ord.paymentStatus}
-                              disabled={ord.paymentMethod === 'Razorpay'}
+                              disabled={ord.orderStatus === 'Delivered'}
                               onChange={(e) => updateStatus(ord._id, null, e.target.value)}
                               className={`border border-slate-350 rounded-lg py-1 px-2.5 font-bold outline-none text-[11px] ${
-                                ord.paymentMethod === 'Razorpay'
-                                  ? 'text-slate-400 bg-slate-100 cursor-not-allowed'
+                                ord.orderStatus === 'Delivered'
+                                  ? 'text-slate-400 bg-slate-50 cursor-not-allowed'
                                   : 'text-slate-800 bg-white'
                                 }`}
                             >
@@ -1112,6 +1188,13 @@ export default function AdminDashboard() {
                                 className="h-8 px-4 bg-[#388E3C] hover:bg-[#2e7d32] text-white font-bold text-[10px] uppercase rounded-[4px] shadow-sm transition-colors outline-none"
                               >
                                 Verify & Confirm Delivery
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleSendDeliveryOtp(ord._id)}
+                                className="h-8 px-4 bg-[#FF9F00] hover:bg-[#e68f00] text-white font-bold text-[10px] uppercase rounded-[4px] shadow-sm transition-colors outline-none"
+                              >
+                                Resend
                               </button>
                               <button
                                 type="button"
@@ -1277,6 +1360,101 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
+              </div>
+            )}
+
+            {/* TAB 6: USERS MANAGEMENT */}
+            {adminTab === 'users' && (
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <h2 className="text-sm font-bold text-[#212121] uppercase">Customer Database</h2>
+                  <span className="text-[10px] bg-[#2874F0]/10 text-[#2874F0] px-2 py-0.5 rounded-lg font-bold uppercase">
+                    {usersList.length} Accounts
+                  </span>
+                </div>
+
+                <div className="bg-white border border-slate-200 rounded-lg shadow-sm overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs text-slate-600 whitespace-nowrap">
+                      <thead className="bg-slate-50 border-b border-slate-200 text-[#212121] uppercase text-[10px]">
+                        <tr>
+                          <th className="px-4 py-3 font-bold">User Details</th>
+                          <th className="px-4 py-3 font-bold">Contact</th>
+                          <th className="px-4 py-3 font-bold">Role</th>
+                          <th className="px-4 py-3 font-bold text-center">Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-slate-100 font-semibold">
+                        {usersList.map((usr) => (
+                          <tr key={usr._id} className="hover:bg-slate-50 transition-colors">
+                            <td className="px-4 py-3">
+                              <div className="flex flex-col">
+                                <span className="text-[#212121] font-bold">{usr.name}</span>
+                                <span className="text-[10px] text-slate-400">ID: {usr._id.substring(0,8)}</span>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex flex-col">
+                                <span>{usr.email}</span>
+                                <span className="text-[10px] text-slate-400">{usr.mobile || 'N/A'}</span>
+                              </div>
+                            </td>
+                            <td className="px-4 py-3">
+                              <span className={`px-2 py-0.5 rounded text-[9px] uppercase font-bold ${
+                                usr.role === 'admin' ? 'bg-[#388E3C] text-white' : 'bg-slate-100 text-slate-600'
+                              }`}>
+                                {usr.role}
+                              </span>
+                            </td>
+                            <td className="px-4 py-3 text-center">
+                              <span className={`px-2 py-0.5 rounded text-[9px] uppercase font-bold ${
+                                usr.status === 'active' ? 'text-[#388E3C] bg-green-50' : 'text-red-500 bg-red-50'
+                              }`}>
+                                {usr.status || 'Active'}
+                              </span>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* TAB 7: REVIEWS */}
+            {adminTab === 'reviews' && (
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <h2 className="text-sm font-bold text-[#212121] uppercase">Product Reviews</h2>
+                </div>
+
+                {reviewsList.length > 0 ? (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {reviewsList.map((rev) => (
+                      <div key={rev._id} className="bg-white border border-slate-200 rounded-lg p-4 shadow-sm flex flex-col gap-2">
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <span className="font-bold text-xs text-[#212121]">{rev.product?.name || 'Unknown Product'}</span>
+                            <span className="text-[10px] text-slate-400 block mt-0.5">By {rev.user?.name || 'Anonymous'}</span>
+                          </div>
+                          <div className="flex items-center gap-0.5 text-[#388E3C] bg-green-50 px-1.5 py-0.5 rounded font-bold text-[10px]">
+                            {rev.rating} <Star className="w-2.5 h-2.5 fill-current" />
+                          </div>
+                        </div>
+                        <p className="text-xs text-slate-600 font-medium italic bg-slate-50 p-2 rounded border border-slate-100 mt-1">
+                          "{rev.comment}"
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="bg-white border border-slate-200 p-8 text-center rounded-lg shadow-sm">
+                    <span className="text-2xl block mb-2">⭐</span>
+                    <h4 className="font-bold text-[#212121] text-xs uppercase">No Reviews Yet</h4>
+                    <p className="text-xs text-slate-400 mt-1">Customers haven't left any product reviews.</p>
+                  </div>
+                )}
               </div>
             )}
 
