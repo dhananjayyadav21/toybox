@@ -255,7 +255,7 @@ export const sendDeliveryOtp = async (req, res) => {
       return res.status(404).json({ message: 'Order not found' });
     }
 
-    if (order.paymentStatus !== 'Paid') {
+    if (order.paymentStatus !== 'Paid' && order.paymentMethod !== 'COD') {
       return res.status(400).json({ message: 'Settlement must be marked as Paid before sending delivery OTP' });
     }
 

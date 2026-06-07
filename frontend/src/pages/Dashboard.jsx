@@ -68,9 +68,9 @@ export default function Dashboard() {
   }, [user]);
 
   // Fetch orders
-  const fetchMyOrders = async () => {
+  const fetchMyOrders = async (silent = false) => {
     if (!user) return;
-    setOrdersLoading(true);
+    if (!silent) setOrdersLoading(true);
     try {
       if (!isOfflineMode) {
         const res = await axios.get('/api/orders/myorders', getAuthHeaders());
@@ -98,7 +98,7 @@ export default function Dashboard() {
     } catch (err) {
       console.log('My orders fetch failed');
     } finally {
-      setOrdersLoading(false);
+      if (!silent) setOrdersLoading(false);
     }
   };
 
@@ -116,7 +116,7 @@ export default function Dashboard() {
     if (!hasActiveDispatches) return;
 
     const interval = setInterval(() => {
-      fetchMyOrders();
+      fetchMyOrders(true);
     }, 8000);
 
     return () => clearInterval(interval);
