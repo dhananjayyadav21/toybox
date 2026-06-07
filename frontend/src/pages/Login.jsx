@@ -333,7 +333,12 @@ export default function Login() {
             disabled={loading}
             className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase tracking-wider py-3.5 px-6 rounded-[6px] w-full mt-2 flex items-center justify-center gap-1.5 shadow-sm active:scale-[0.98] transition-all outline-none"
           >
-            {loading ? 'Processing...' : (
+            {loading ? (
+              <>
+                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                Processing...
+              </>
+            ) : (
               <>
                 {authMode === 'login' && 'Sign In'}
                 {authMode === 'register' && 'Register Account'}

@@ -465,26 +465,52 @@ export default function ProductDetails() {
 
                   {/* Actions buttons (height 44px desktop, 40px mobile) */}
                   <div className="flex-1 flex gap-2 min-w-0">
-                    <button 
-                      onClick={() => addToCart(product._id, qty)}
-                      className="h-10 md:h-11 bg-[#FF9F00] hover:bg-[#e68e00] text-[#212121] font-bold text-[10px] md:text-xs uppercase rounded-[6px] shadow-sm flex items-center justify-center gap-1 md:gap-1.5 flex-1 transition-colors outline-none whitespace-nowrap px-1"
-                    >
-                      <ShoppingCart className="w-3.5 h-3.5 md:w-4 md:h-4 shrink-0" /> Add to Cart
-                    </button>
-                    <button 
-                      onClick={handleBuyNow}
-                      className="h-10 md:h-11 bg-[#FB641B] hover:bg-[#e15610] text-white font-bold text-[10px] md:text-xs uppercase rounded-[6px] shadow-sm flex items-center justify-center gap-1 md:gap-1.5 flex-1 transition-colors outline-none whitespace-nowrap px-1"
-                    >
-                      <Zap className="w-3.5 h-3.5 md:w-4 md:h-4 shrink-0" /> Buy Now
-                    </button>
-                    <button 
-                      onClick={() => toggleWishlist(product._id)}
-                      className={`p-2 md:p-3 border rounded-[6px] shadow-sm transition-all h-10 md:h-11 shrink-0 flex items-center justify-center ${
-                        isInWishlist ? 'border-red-250 bg-rose-50 text-red-500 hover:bg-rose-100' : 'border-slate-300 hover:bg-slate-50 text-slate-400'
-                      }`}
-                    >
-                      <Heart className={`w-4 h-4 md:w-4.5 md:h-4.5 ${isInWishlist ? 'fill-current' : ''}`} />
-                    </button>
+                    <div className="relative group/cart flex-1">
+                      <button 
+                        onClick={() => addToCart(product._id, qty)}
+                        className="h-10 md:h-11 bg-[#FF9F00] hover:bg-[#e68e00] text-[#212121] font-bold text-[10px] md:text-xs uppercase rounded-[6px] shadow-sm flex items-center justify-center gap-1 md:gap-1.5 w-full transition-colors outline-none whitespace-nowrap px-1"
+                      >
+                        <ShoppingCart className="w-3.5 h-3.5 md:w-4 md:h-4 shrink-0" /> Add to Cart
+                      </button>
+                      {/* Tooltip */}
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 scale-0 group-hover/cart:scale-100 transition-all duration-150 origin-bottom bg-slate-900/90 text-white text-[10px] font-bold py-1 px-2.5 rounded-lg whitespace-nowrap shadow-lg pointer-events-none z-20">
+                        Add to Cart 🛒
+                        {/* arrow */}
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900/90" />
+                      </div>
+                    </div>
+
+                    <div className="relative group/buy flex-1">
+                      <button 
+                        onClick={handleBuyNow}
+                        className="h-10 md:h-11 bg-[#FB641B] hover:bg-[#e15610] text-white font-bold text-[10px] md:text-xs uppercase rounded-[6px] shadow-sm flex items-center justify-center gap-1 md:gap-1.5 w-full transition-colors outline-none whitespace-nowrap px-1"
+                      >
+                        <Zap className="w-3.5 h-3.5 md:w-4 md:h-4 shrink-0" /> Buy Now
+                      </button>
+                      {/* Tooltip */}
+                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 scale-0 group-hover/buy:scale-100 transition-all duration-150 origin-bottom bg-slate-900/90 text-white text-[10px] font-bold py-1 px-2.5 rounded-lg whitespace-nowrap shadow-lg pointer-events-none z-20">
+                        Proceed to Checkout ⚡
+                        {/* arrow */}
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900/90" />
+                      </div>
+                    </div>
+
+                    <div className="relative group/wishlist shrink-0">
+                      <button 
+                        onClick={() => toggleWishlist(product._id)}
+                        className={`p-2 md:p-3 border rounded-[6px] shadow-sm transition-all h-10 md:h-11 flex items-center justify-center ${
+                          isInWishlist ? 'border-red-250 bg-rose-50 text-red-500 hover:bg-rose-100' : 'border-slate-300 hover:bg-slate-50 text-slate-400'
+                        }`}
+                      >
+                        <Heart className={`w-4 h-4 md:w-4.5 md:h-4.5 ${isInWishlist ? 'fill-current' : ''}`} />
+                      </button>
+                      {/* Tooltip */}
+                      <div className="absolute bottom-full right-0 mb-2 scale-0 group-hover/wishlist:scale-100 transition-all duration-150 origin-bottom-right bg-slate-900/90 text-white text-[10px] font-bold py-1 px-2.5 rounded-lg whitespace-nowrap shadow-lg pointer-events-none z-20">
+                        {isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist ❤️'}
+                        {/* arrow */}
+                        <div className="absolute top-full right-4 border-4 border-transparent border-t-slate-900/90" />
+                      </div>
+                    </div>
                   </div>
 
                 </div>
@@ -557,9 +583,14 @@ export default function ProductDetails() {
                 <button
                   type="submit"
                   disabled={submitLoading}
-                  className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-[11px] uppercase py-2.5 rounded-[6px] h-10 transition-colors"
+                  className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-[11px] uppercase py-2.5 rounded-[6px] h-10 transition-colors flex items-center justify-center gap-1.5"
                 >
-                  {submitLoading ? 'Posting...' : 'Submit Feedback'}
+                  {submitLoading ? (
+                    <>
+                      <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                      Posting...
+                    </>
+                  ) : 'Submit Feedback'}
                 </button>
               </form>
             </div>

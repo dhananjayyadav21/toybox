@@ -417,7 +417,7 @@ export const AppProvider = ({ children }) => {
           }
         });
       }
-
+      showToast('Added to Cart! 🛒', 'success');
     } catch (error) {
       showToast('Failed to add item to cart', 'error');
     }
@@ -435,7 +435,7 @@ export const AppProvider = ({ children }) => {
           ).filter(item => item.quantity > 0)
         );
       }
-
+      showToast('Cart quantity updated! 🔄', 'success');
     } catch (error) {
       showToast('Failed to update quantity', 'error');
     }
@@ -449,7 +449,7 @@ export const AppProvider = ({ children }) => {
       } else {
         setCart(prev => prev.filter(item => item.product._id !== productId));
       }
-
+      showToast('Item removed from cart! 🗑️', 'info');
     } catch (error) {
       showToast('Failed to remove item', 'error');
     }
@@ -469,20 +469,20 @@ export const AppProvider = ({ children }) => {
         if (isInWishlist) {
           const res = await axios.delete(`/api/wishlist/remove/${productId}`, getAuthHeaders());
           setWishlist(res.data);
-
+          showToast('Removed from Wishlist! 💔', 'info');
         } else {
           const res = await axios.post('/api/wishlist/add', { productId }, getAuthHeaders());
           setWishlist(res.data);
-
+          showToast('Added to Wishlist! ❤️', 'success');
         }
       } else {
         const product = products.find(p => p._id === productId);
         if (isInWishlist) {
           setWishlist(prev => prev.filter(item => item._id !== productId));
-
+          showToast('Removed from Wishlist! 💔', 'info');
         } else {
           setWishlist(prev => [...prev, product]);
-
+          showToast('Added to Wishlist! ❤️', 'success');
         }
       }
     } catch (error) {
@@ -603,7 +603,9 @@ export const AppProvider = ({ children }) => {
         products,
         categories,
         cart,
+        setCart,
         wishlist,
+
         toasts,
         loading,
         isOfflineMode,

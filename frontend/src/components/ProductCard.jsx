@@ -32,16 +32,24 @@ export default function ProductCard({ product }) {
       )}
 
       {/* Wishlist button */}
-      <button
-        onClick={() => toggleWishlist(product._id)}
-        className={`absolute top-3 right-3 z-10 w-8 h-8 rounded-xl flex items-center justify-center transition-all shadow-sm border ${
-          isInWishlist
-            ? 'bg-rose-500 border-rose-400 text-white'
-            : 'bg-white border-violet-100 text-gray-400 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50'
-        }`}
-      >
-        <Heart className={`w-4 h-4 ${isInWishlist ? 'fill-current' : ''}`} />
-      </button>
+      <div className="absolute top-3 right-3 z-10 group/wishlist">
+        <button
+          onClick={() => toggleWishlist(product._id)}
+          className={`w-8 h-8 rounded-xl flex items-center justify-center transition-all shadow-sm border ${
+            isInWishlist
+              ? 'bg-rose-500 border-rose-400 text-white'
+              : 'bg-white border-violet-100 text-gray-400 hover:text-rose-500 hover:border-rose-200 hover:bg-rose-50'
+          }`}
+        >
+          <Heart className={`w-4 h-4 ${isInWishlist ? 'fill-current' : ''}`} />
+        </button>
+        {/* Tooltip */}
+        <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 scale-0 group-hover/wishlist:scale-100 transition-all duration-150 origin-right bg-slate-900/90 text-white text-[10px] font-bold py-1 px-2.5 rounded-lg whitespace-nowrap shadow-lg pointer-events-none z-20">
+          {isInWishlist ? 'Remove from Wishlist' : 'Add to Wishlist'}
+          {/* arrow */}
+          <div className="absolute left-full top-1/2 -translate-y-1/2 border-4 border-transparent border-l-slate-900/90" />
+        </div>
+      </div>
 
       {/* Product image */}
       <Link to={`/product/${product._id}`} className="block relative overflow-hidden bg-gradient-to-br from-violet-50 to-slate-50 rounded-t-xl">
@@ -104,12 +112,20 @@ export default function ProductCard({ product }) {
           </div>
 
           {product.stock > 0 ? (
-            <button
-              onClick={() => addToCart(product._id)}
-              className="w-full h-8 sm:h-9 bg-violet-700 hover:bg-violet-800 text-white font-semibold text-[10px] sm:text-xs rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all active:scale-95 shadow-sm shadow-violet-200"
-            >
-              <ShoppingCart className="w-3.5 h-3.5" /> Add to Cart
-            </button>
+            <div className="relative group/cart w-full">
+              <button
+                onClick={() => addToCart(product._id)}
+                className="w-full h-8 sm:h-9 bg-violet-700 hover:bg-violet-800 text-white font-semibold text-[10px] sm:text-xs rounded-xl flex items-center justify-center gap-1 sm:gap-1.5 transition-all active:scale-95 shadow-sm shadow-violet-200"
+              >
+                <ShoppingCart className="w-3.5 h-3.5" /> Add to Cart
+              </button>
+              {/* Tooltip */}
+              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 scale-0 group-hover/cart:scale-100 transition-all duration-150 origin-bottom bg-slate-900/90 text-white text-[10px] font-bold py-1 px-2.5 rounded-lg whitespace-nowrap shadow-lg pointer-events-none z-20">
+                Add this toy to your cart! 🧸
+                {/* arrow */}
+                <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-slate-900/90" />
+              </div>
+            </div>
           ) : (
             <span className="w-full h-9 bg-gray-100 text-gray-400 font-semibold text-xs rounded-xl flex items-center justify-center uppercase tracking-wide">
               Out of Stock

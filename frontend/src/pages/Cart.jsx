@@ -305,9 +305,14 @@ export default function Cart() {
                     <button 
                       type="submit" 
                       disabled={couponLoading}
-                      className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs px-4 py-1.5 rounded-[2px] shrink-0 transition-colors"
+                      className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs px-4 py-1.5 rounded-[2px] shrink-0 transition-colors flex items-center justify-center gap-1"
                     >
-                      Apply
+                      {couponLoading ? (
+                        <>
+                          <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                          Applying...
+                        </>
+                      ) : 'Apply'}
                     </button>
                   </form>
                 )}

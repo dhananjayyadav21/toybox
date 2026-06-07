@@ -17,6 +17,7 @@ export default function Checkout() {
   const { 
     user, 
     cart, 
+    setCart,
     addAddress, 
     showToast, 
     isOfflineMode, 
@@ -289,7 +290,9 @@ export default function Checkout() {
     setPlacedOrderDetails(orderDetails);
     setOrderSuccess(true);
     sessionStorage.removeItem('activeCoupon');
+    setCart([]);
     fetchData();
+    showToast('Order Placed Successfully! 🎉', 'success');
 
     confetti({
       particleCount: 150,
@@ -614,7 +617,12 @@ export default function Checkout() {
                 disabled={checkoutLoading}
                 className="w-full h-11 bg-[#FB641B] hover:bg-[#e15610] text-white font-bold text-xs uppercase rounded-lg shadow-sm flex items-center justify-center gap-1.5 mt-4 transition-colors outline-none"
               >
-                {checkoutLoading ? 'Placing Order...' : 'Confirm & Place Order'}
+                {checkoutLoading ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Placing Order...
+                  </>
+                ) : 'Confirm & Place Order'}
               </button>
             </div>
 

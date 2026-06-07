@@ -680,9 +680,14 @@ export default function Dashboard() {
                       <button
                         type="submit"
                         disabled={profileLoading}
-                        className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase h-10 px-6 rounded-lg shadow-sm transition-colors outline-none"
+                        className="bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase h-10 px-6 rounded-lg shadow-sm transition-colors outline-none flex items-center justify-center gap-1.5"
                       >
-                        {profileLoading ? 'Saving...' : 'Save Profile Details'}
+                        {profileLoading ? (
+                          <>
+                            <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            Saving...
+                          </>
+                        ) : 'Save Profile Details'}
                       </button>
                     </div>
                   </form>

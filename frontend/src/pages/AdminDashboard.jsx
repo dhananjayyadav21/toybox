@@ -43,6 +43,12 @@ export default function AdminDashboard() {
   // Tab State: 'overview', 'products', 'categories', 'orders', 'coupons'
   const [adminTab, setAdminTab] = useState('overview');
 
+  // Form submission loading states
+  const [productSubmitLoading, setProductSubmitLoading] = useState(false);
+  const [categorySubmitLoading, setCategorySubmitLoading] = useState(false);
+  const [couponSubmitLoading, setCouponSubmitLoading] = useState(false);
+
+
   // Dynamic states populated from API
   const [orders, setOrders] = useState([]);
   const [coupons, setCoupons] = useState([]);
@@ -182,6 +188,7 @@ export default function AdminDashboard() {
       return;
     }
 
+    setProductSubmitLoading(true);
     try {
       if (!isOfflineMode) {
         if (editingProduct) {
@@ -202,6 +209,8 @@ export default function AdminDashboard() {
       fetchData(); 
     } catch (err) {
       showToast('Product submission failed', 'error');
+    } finally {
+      setProductSubmitLoading(false);
     }
   };
 
@@ -220,6 +229,7 @@ export default function AdminDashboard() {
   // CRUD API: CATEGORIES
   const handleCategorySubmit = async (e) => {
     e.preventDefault();
+    setCategorySubmitLoading(true);
     try {
       if (!isOfflineMode) {
         if (editingCategory) {
@@ -238,12 +248,15 @@ export default function AdminDashboard() {
       fetchData();
     } catch (err) {
       showToast('Category update failed', 'error');
+    } finally {
+      setCategorySubmitLoading(false);
     }
   };
 
   // CRUD API: COUPONS
   const handleCouponSubmit = async (e) => {
     e.preventDefault();
+    setCouponSubmitLoading(true);
     try {
       if (!isOfflineMode) {
         const res = await axios.post('/api/coupons', couponFormData, getAuthHeaders());
@@ -261,6 +274,8 @@ export default function AdminDashboard() {
       setCouponFormData({ code: '', discountType: 'percentage', discountValue: '', expiryDate: '', usageLimit: '' });
     } catch (err) {
       showToast('Failed to add coupon', 'error');
+    } finally {
+      setCouponSubmitLoading(false);
     }
   };
 
@@ -874,8 +889,19 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="sm:col-span-2 pt-2 flex gap-2">
-                      <button type="submit" className="h-9 px-4 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase rounded-lg shadow-sm">
-                        {editingProduct ? 'Update Specifications' : 'Save Entry'}
+                      <button 
+                        type="submit" 
+                        disabled={productSubmitLoading}
+                        className="h-9 px-4 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase rounded-lg shadow-sm flex items-center justify-center gap-1.5"
+                      >
+                        {productSubmitLoading ? (
+                          <>
+                            <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            {editingProduct ? 'Updating...' : 'Saving...'}
+                          </>
+                        ) : (
+                          editingProduct ? 'Update Specifications' : 'Save Entry'
+                        )}
                       </button>
                       <button 
                         type="button" 
@@ -1021,8 +1047,17 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="pt-2 flex gap-2">
-                      <button type="submit" className="h-9 px-4 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase rounded-lg shadow-sm">
-                        Save Category
+                      <button 
+                        type="submit" 
+                        disabled={categorySubmitLoading}
+                        className="h-9 px-4 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase rounded-lg shadow-sm flex items-center justify-center gap-1.5"
+                      >
+                        {categorySubmitLoading ? (
+                          <>
+                            <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            Saving...
+                          </>
+                        ) : 'Save Category'}
                       </button>
                       <button type="button" onClick={() => { setNewCategoryForm(false); setEditingCategory(null); }} className="h-9 px-4 bg-white border border-slate-300 text-slate-650 font-bold text-xs uppercase rounded-lg shadow-sm hover:bg-slate-50">
                         Cancel
@@ -1310,8 +1345,17 @@ export default function AdminDashboard() {
                     </div>
 
                     <div className="sm:col-span-2 pt-2 flex gap-2">
-                      <button type="submit" className="h-9 px-4 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase rounded-lg shadow-sm">
-                        Create Promo Code
+                      <button 
+                        type="submit" 
+                        disabled={couponSubmitLoading}
+                        className="h-9 px-4 bg-[#2874F0] hover:bg-[#1a5ebf] text-white font-bold text-xs uppercase rounded-lg shadow-sm flex items-center justify-center gap-1.5"
+                      >
+                        {couponSubmitLoading ? (
+                          <>
+                            <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            Creating...
+                          </>
+                        ) : 'Create Promo Code'}
                       </button>
                       <button type="button" onClick={() => setNewCouponForm(false)} className="h-9 px-4 bg-white border border-slate-300 text-slate-650 font-bold text-xs uppercase rounded-lg shadow-sm hover:bg-slate-50">
                         Cancel
