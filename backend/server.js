@@ -24,6 +24,10 @@ connectDB();
 
 const app = express();
 
+// Trust proxy (required for express-rate-limit on hosting platforms like Render)
+app.set('trust proxy', 1);
+
+
 // Security and utility Middlewares
 app.use(helmet({
   crossOriginResourcePolicy: false // Allows loading images from external URLs without CORS headers issues
